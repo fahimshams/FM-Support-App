@@ -6,8 +6,13 @@ const router = Router();
 
 // GET /machines → list machine models for this org
 router.get("/", (req, res) => {
-  // later you can filter by org from auth; for now return all
-  res.json(machines);
+  try {
+    // later you can filter by org from auth; for now return all
+    res.json(machines);
+  } catch (error) {
+    console.error('Error in GET /machines:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // GET /machines/:machineId/instances → list serials for one machine
