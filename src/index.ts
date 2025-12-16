@@ -87,6 +87,15 @@ app.get("/", (req, res) => {
   res.send("Zoje Machineries Support Backend is running.");
 });
 
+// Health check endpoint for debugging
+app.get("/health", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 app.use("/public", express.static("public")); 
 
 // API routes
