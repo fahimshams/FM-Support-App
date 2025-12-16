@@ -293,7 +293,7 @@ export default function MachineDetailsPage() {
               </div>
             ) : (
               <div className="service-history-timeline">
-                {serviceHistory.map((ticket, index) => (
+                {serviceHistory.map((ticket) => (
                   <div key={ticket.id} className="timeline-item">
                     <div className="timeline-marker" />
                     <div className="timeline-content">

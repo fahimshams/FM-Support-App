@@ -383,7 +383,7 @@ function TicketCard({
 }
 
 function StatusPill({ status }: { status: Ticket["status"] }) {
-  let label = status;
+  let label: string = status;
   let bg = "#F5F7FA";
   let textColor = "#4A5568";
   let border = "#E2E8F0";

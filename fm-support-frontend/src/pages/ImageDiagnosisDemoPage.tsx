@@ -1,5 +1,5 @@
 // src/pages/ImageDiagnosisDemoPage.tsx
-import { useState, ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 

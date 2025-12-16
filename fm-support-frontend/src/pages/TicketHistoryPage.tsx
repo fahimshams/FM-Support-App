@@ -352,7 +352,7 @@ export default function TicketHistoryPage() {
                           {ticket.issueType === "THREAD_BREAKING" ? "Thread Breaking" :
                            ticket.issueType === "STITCH_SKIPPING" ? "Stitch Skipping" :
                            ticket.issueType === "FABRIC_NOT_FEEDING" ? "Fabric Not Feeding" :
-                           ticket.issueType.replace(/_/g, " ")}
+                           "Unknown Issue"}
                         </td>
                         <td>{getStatusBadge(ticket.status)}</td>
                         <td>
@@ -411,7 +411,7 @@ export default function TicketHistoryPage() {
                         {ticket.issueType === "THREAD_BREAKING" ? "Thread Breaking" :
                          ticket.issueType === "STITCH_SKIPPING" ? "Stitch Skipping" :
                          ticket.issueType === "FABRIC_NOT_FEEDING" ? "Fabric Not Feeding" :
-                         ticket.issueType.replace(/_/g, " ")}
+                         "Unknown Issue"}
                       </span>
                     </div>
                     <div className="ticket-card-description">

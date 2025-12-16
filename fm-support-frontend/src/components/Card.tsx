@@ -7,7 +7,7 @@ export default function Card({
   className = "",
 }: {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   style?: React.CSSProperties;
   className?: string;
 }) {
