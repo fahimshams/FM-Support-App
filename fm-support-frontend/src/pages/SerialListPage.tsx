@@ -3,26 +3,8 @@ import { modelsByCategory } from "../data/models";
 import { generateSerials } from "../data/generateSerials";
 import { spareParts } from "../data/spareParts";
 import { useState } from "react";
-import { BASE_URL } from "../api"; 
-
-// normalize image URL so it works on mobile
-function resolveModelImage(image: string | undefined): string {
-  if (!image) return "";
-
-  // If image is already using localhost backend, swap base
-  if (image.startsWith("http://localhost:4000") || image.startsWith("http://127.0.0.1:4000")) {
-    return image.replace(/^http:\/\/(localhost|127\.0\.0\.1):4000/, BASE_URL);
-  }
-
-  // If it's a backend relative path like "/public/zoje.png"
-  if (image.startsWith("/public")) {
-    return `${BASE_URL}${image}`;
-  }
-
-  // If it's a plain relative path (e.g. "/images/zoje.png" served by frontend),
-  // keep as-is, it will be resolved by Vite from 192.168.68.104:5173
-  return image;
-}
+import { resolveImageUrl } from "../utils/imageUtils";
+import Card from "../components/Card";
 
 export default function SerialListPage() {
   const { categoryId, modelId } = useParams();
@@ -36,131 +18,181 @@ export default function SerialListPage() {
 
   if (!model || !modelId) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020617",
-          color: "white",
-          padding: "24px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        Invalid machine model.
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <Card style={{ padding: "32px", textAlign: "center" }}>
+          <h2 style={{ fontSize: "1.5rem", marginBottom: "8px", color: "#1A1F36", fontWeight: 600 }}>
+            Invalid Machine Model
+          </h2>
+          <p style={{ fontSize: "0.95rem", color: "#718096" }}>
+            Please select a valid machine model.
+          </p>
+        </Card>
       </div>
     );
   }
 
   const parts = spareParts[modelId] ?? [];
-  const imageUrl = resolveModelImage((model as any).image); 
+  const imageUrl = resolveImageUrl((model as any).image);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      <h2 style={{ fontSize: "1.4rem", marginBottom: "16px" }}>
-        {model.name} — Factory Inventory
-      </h2>
+    <div>
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ fontSize: "1.75rem", marginBottom: "8px", color: "#1A1F36", fontWeight: 600 }}>
+          {model.name}
+        </h2>
+        <p style={{ fontSize: "0.95rem", color: "#718096" }}>Factory Inventory</p>
+      </div>
 
       {serials.map((s: any, idx: number) => (
-        <div
-          key={idx}
-          style={{
-            borderRadius: "12px",
-            border: "1px solid #1f2937",
-            background: "#020617",
-            padding: "16px",
-            marginBottom: "12px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-            display: "flex",
-            gap: "16px",
-          }}
-        >
-          <img
-            src={imageUrl}
-            alt={model.name}
-            style={{
-              width: "120px",
-              height: "120px",
-              objectFit: "contain",
-              flexShrink: 0,
-            }}
-          />
+        <Card key={idx} style={{ marginBottom: "16px", padding: "24px" }}>
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            {imageUrl && (
+              <div
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  borderRadius: "8px",
+                  background: "#F5F7FA",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  border: "1px solid #E2E8F0",
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src={imageUrl}
+                  alt={model.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            )}
 
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                fontSize: "1.05rem",
-                fontWeight: 600,
-                marginBottom: "4px",
-              }}
-            >
-              Serial: {s.serial}
-            </div>
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <div
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  marginBottom: "12px",
+                  color: "#1A1F36",
+                }}
+              >
+                Serial: <span style={{ color: "#0066CC" }}>{s.serial}</span>
+              </div>
 
-            <div style={{ fontSize: "0.9rem", marginBottom: "4px" }}>
-              <strong>Purchase:</strong> {s.purchaseDate}
-            </div>
-            <div style={{ fontSize: "0.9rem", marginBottom: "4px" }}>
-              <strong>Warranty Expiry:</strong> {s.expiryDate}
-            </div>
-            <div
-              style={{
-                fontSize: "0.9rem",
-                marginBottom: "6px",
-                color: s.active ? "#22c55e" : "#f97373",
-                fontWeight: 600,
-              }}
-            >
-              Warranty: {s.active ? "Active" : "Expired"}
-            </div>
-            <div style={{ fontSize: "0.9rem", marginBottom: "8px" }}>
-              <strong>Coverage:</strong> {s.coverage}
-            </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gap: "12px",
+                  marginBottom: "16px",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+                    Purchase Date
+                  </div>
+                  <div style={{ fontSize: "0.95rem", fontWeight: 500, color: "#1A1F36" }}>
+                    {s.purchaseDate}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+                    Warranty Expiry
+                  </div>
+                  <div style={{ fontSize: "0.95rem", fontWeight: 500, color: "#1A1F36" }}>
+                    {s.expiryDate}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+                    Warranty Status
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: s.active ? "#059669" : "#DC2626",
+                    }}
+                  >
+                    {s.active ? "Active" : "Expired"}
+                  </div>
+                </div>
+              </div>
 
-            <details style={{ fontSize: "0.9rem", marginBottom: "8px" }}>
-              <summary style={{ cursor: "pointer" }}>
-                Spare Parts (USD)
-              </summary>
-              <ul style={{ marginTop: "6px", paddingLeft: "20px" }}>
-                {parts.map((p: any, i: number) => (
-                  <li key={i} style={{ marginBottom: "2px" }}>
-                    {p.name} — <strong>${p.price}</strong>
-                  </li>
-                ))}
-              </ul>
-            </details>
+              <div style={{ fontSize: "0.875rem", color: "#4A5568", marginBottom: "12px" }}>
+                <strong>Coverage:</strong> {s.coverage}
+              </div>
 
-            <button
-              onClick={() =>
-                navigate("/ticket", {
-                  state: {
-                    modelId,
-                    serial: s.serial,
-                    machineImage: imageUrl, 
-                  },
-                })
-              }
-              style={{
-                marginTop: "4px",
-                padding: "8px 14px",
-                borderRadius: "999px",
-                border: "none",
-                background: "#3b82f6",
-                color: "white",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Report Issue
-            </button>
+              <details
+                style={{
+                  fontSize: "0.9rem",
+                  marginBottom: "16px",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  background: "#F5F7FA",
+                  border: "1px solid #E2E8F0",
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: "pointer",
+                    fontWeight: 500,
+                    color: "#1A1F36",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Spare Parts (BDT)
+                </summary>
+                <ul style={{ marginTop: "8px", paddingLeft: "20px", color: "#4A5568" }}>
+                  {parts.map((p: any, i: number) => (
+                    <li key={i} style={{ marginBottom: "4px" }}>
+                      {p.name} — <strong style={{ color: "#0066CC" }}>৳{p.price * 110}</strong> (approx)
+                    </li>
+                  ))}
+                </ul>
+              </details>
+
+              <button
+                onClick={() =>
+                  navigate("/ticket", {
+                    state: {
+                      modelId,
+                      serial: s.serial,
+                      machineImage: imageUrl,
+                    },
+                  })
+                }
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "#0066CC",
+                  color: "white",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#0052A3";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#0066CC";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                Report Issue
+              </button>
+            </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { updateTicket } from "../api";
+import Card from "../components/Card";
 
 export default function TechnicianTicketPage() {
   const navigate = useNavigate();
@@ -8,9 +9,7 @@ export default function TechnicianTicketPage() {
     state?: { ticket?: any; techName?: string };
   };
 
-  const [ticket, setTicket] = useState<any | null>(
-    location.state?.ticket || null
-  );
+  const [ticket, setTicket] = useState<any | null>(location.state?.ticket || null);
   const techName = location.state?.techName || "Technician";
 
   const [status, setStatus] = useState<string>(ticket?.status || "OPEN");
@@ -19,30 +18,34 @@ export default function TechnicianTicketPage() {
 
   if (!ticket) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020617",
-          color: "white",
-          padding: "24px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        <p>No ticket data. Please open from Technician Dashboard.</p>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            marginTop: "8px",
-            padding: "6px 12px",
-            borderRadius: "999px",
-            border: "none",
-            background: "#3b82f6",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          Back
-        </button>
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <Card style={{ padding: "32px", textAlign: "center" }}>
+          <p style={{ fontSize: "0.95rem", color: "#718096", marginBottom: "20px" }}>
+            No ticket data. Please open from Technician Dashboard.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              padding: "10px 20px",
+              borderRadius: "8px",
+              border: "none",
+              background: "#0066CC",
+              color: "white",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#0052A3";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#0066CC";
+            }}
+          >
+            Back
+          </button>
+        </Card>
       </div>
     );
   }
@@ -57,7 +60,7 @@ export default function TechnicianTicketPage() {
       });
       setTicket(res.ticket);
       setNote("");
-      alert("Ticket updated");
+      alert("Ticket updated successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to update ticket");
@@ -67,105 +70,175 @@ export default function TechnicianTicketPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
+    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
       <button
         onClick={() => navigate(-1)}
         style={{
-          marginBottom: "12px",
-          padding: "6px 12px",
-          borderRadius: "999px",
-          border: "none",
-          background: "#111827",
-          color: "white",
+          marginBottom: "20px",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          border: "1px solid #E2E8F0",
+          background: "#FFFFFF",
+          color: "#4A5568",
+          fontSize: "0.875rem",
+          fontWeight: 500,
           cursor: "pointer",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "#F5F7FA";
+          e.currentTarget.style.borderColor = "#CBD5E0";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "#FFFFFF";
+          e.currentTarget.style.borderColor = "#E2E8F0";
         }}
       >
         ← Back
       </button>
 
-      <h1 style={{ fontSize: "1.4rem", marginBottom: "8px" }}>
-        Ticket Detail – {ticket.id}
-      </h1>
-      <p style={{ fontSize: "0.85rem", opacity: 0.8, marginBottom: "12px" }}>
-        Technician: {techName}
-      </p>
+      <div style={{ marginBottom: "24px" }}>
+        <h1 style={{ fontSize: "1.75rem", marginBottom: "8px", color: "#1A1F36", fontWeight: 600 }}>
+          Ticket Detail – {ticket.id}
+        </h1>
+        <p style={{ fontSize: "0.95rem", color: "#718096" }}>Technician: {techName}</p>
+      </div>
 
-      <div
-        style={{
-          background: "#0F172A",
-          borderRadius: "10px",
-          padding: "16px",
-          border: "1px solid #1f2937",
-          marginBottom: "16px",
-        }}
-      >
-        <div style={{ marginBottom: "6px" }}>
-          <strong>Machine:</strong> {ticket.machineId}
+      {/* Ticket Info Card */}
+      <Card style={{ marginBottom: "24px", padding: "24px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "16px",
+            marginBottom: "20px",
+          }}
+        >
+          <div>
+            <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+              Machine ID
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 500, color: "#1A1F36" }}>
+              {ticket.machineId}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+              Issue Type
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 500, color: "#1A1F36" }}>
+              {ticket.issueType.replace(/_/g, " ")}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+              Status
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 500, color: "#1A1F36" }}>
+              {ticket.status}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "4px" }}>
+              Created
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 500, color: "#1A1F36" }}>
+              {new Date(ticket.createdAt).toLocaleString()}
+            </div>
+          </div>
         </div>
-        <div style={{ marginBottom: "6px" }}>
-          <strong>Issue Type:</strong> {ticket.issueType}
-        </div>
-        <div style={{ marginBottom: "6px" }}>
-          <strong>Description:</strong> {ticket.description}
-        </div>
-        <div style={{ marginBottom: "6px" }}>
-          <strong>Status:</strong> {ticket.status}
-        </div>
-        <div style={{ marginBottom: "6px", fontSize: "0.85rem", opacity: 0.8 }}>
-          <strong>Created:</strong>{" "}
-          {new Date(ticket.createdAt).toLocaleString()}
+
+        <div style={{ marginBottom: "20px" }}>
+          <div style={{ fontSize: "0.875rem", color: "#718096", marginBottom: "8px" }}>
+            Description
+          </div>
+          <div
+            style={{
+              fontSize: "1rem",
+              color: "#1A1F36",
+              lineHeight: 1.6,
+              padding: "12px",
+              background: "#F5F7FA",
+              borderRadius: "8px",
+            }}
+          >
+            {ticket.description}
+          </div>
         </div>
 
         {ticket.aiSuggestion && (
-          <div
+          <Card
             style={{
-              marginTop: "12px",
-              padding: "10px",
-              borderRadius: "8px",
-              background: "#020617",
-              border: "1px dashed #374151",
-              whiteSpace: "pre-wrap",
+              padding: "20px",
+              background: "#E6F2FF",
+              border: "1px solid #B3D9FF",
             }}
           >
             <div
               style={{
-                fontSize: "0.9rem",
-                fontWeight: 600,
-                marginBottom: "4px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginBottom: "12px",
               }}
             >
-              AI Suggestion
+              <div
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "8px",
+                  background: "#0066CC",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                }}
+              >
+                AI
+              </div>
+              <div style={{ fontSize: "1rem", fontWeight: 600, color: "#1A1F36" }}>
+                AI Suggestion
+              </div>
             </div>
-            <div style={{ fontSize: "0.9rem" }}>
+            <div
+              style={{
+                fontSize: "0.95rem",
+                color: "#1A1F36",
+                lineHeight: 1.6,
+                whiteSpace: "pre-wrap",
+                marginBottom: "12px",
+              }}
+            >
               {ticket.aiSuggestion.text}
             </div>
-            <div style={{ fontSize: "0.75rem", opacity: 0.7, marginTop: "4px" }}>
-              From cache: {ticket.aiSuggestion.fromCache ? "Yes" : "No"} ·
-              Credits used: {ticket.aiSuggestion.creditsUsed}
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "#4A5568",
+                paddingTop: "12px",
+                borderTop: "1px solid #B3D9FF",
+              }}
+            >
+              From cache: {ticket.aiSuggestion.fromCache ? "Yes" : "No"} · Credits used:{" "}
+              {ticket.aiSuggestion.creditsUsed}
             </div>
-          </div>
+          </Card>
         )}
-      </div>
+      </Card>
 
-      <div
-        style={{
-          background: "#0F172A",
-          borderRadius: "10px",
-          padding: "16px",
-          border: "1px solid #1f2937",
-        }}
-      >
-        <div style={{ marginBottom: "10px" }}>
+      {/* Update Form Card */}
+      <Card style={{ padding: "24px" }}>
+        <div style={{ marginBottom: "20px" }}>
           <label
-            style={{ display: "block", marginBottom: "4px", fontSize: "0.9rem" }}
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontSize: "0.9rem",
+              fontWeight: 500,
+              color: "#1A1F36",
+            }}
           >
             Update Status
           </label>
@@ -174,11 +247,22 @@ export default function TechnicianTicketPage() {
             onChange={(e) => setStatus(e.target.value)}
             style={{
               width: "100%",
-              padding: "8px",
+              padding: "12px 16px",
               borderRadius: "8px",
-              border: "1px solid #374151",
-              background: "#020617",
-              color: "white",
+              border: "1px solid #E2E8F0",
+              background: "#FFFFFF",
+              color: "#1A1F36",
+              fontSize: "0.9rem",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#0066CC";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 102, 204, 0.1)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#E2E8F0";
+              e.currentTarget.style.boxShadow = "none";
             }}
           >
             <option value="OPEN">OPEN</option>
@@ -187,25 +271,42 @@ export default function TechnicianTicketPage() {
           </select>
         </div>
 
-        <div style={{ marginBottom: "10px" }}>
+        <div style={{ marginBottom: "24px" }}>
           <label
-            style={{ display: "block", marginBottom: "4px", fontSize: "0.9rem" }}
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontSize: "0.9rem",
+              fontWeight: 500,
+              color: "#1A1F36",
+            }}
           >
             Add Technician Note
           </label>
           <textarea
-            rows={3}
+            rows={4}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="E.g., Adjusted needle bar height, cleaned hook, test stitched at 4000 RPM."
             style={{
               width: "100%",
-              padding: "8px",
+              padding: "12px 16px",
               borderRadius: "8px",
-              border: "1px solid #374151",
-              background: "#020617",
-              color: "white",
+              border: "1px solid #E2E8F0",
+              background: "#FFFFFF",
+              color: "#1A1F36",
               resize: "vertical",
+              fontSize: "0.9rem",
+              fontFamily: "inherit",
+              transition: "all 0.2s ease",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#0066CC";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 102, 204, 0.1)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#E2E8F0";
+              e.currentTarget.style.boxShadow = "none";
             }}
           />
         </div>
@@ -214,31 +315,63 @@ export default function TechnicianTicketPage() {
           onClick={handleSave}
           disabled={saving}
           style={{
-            padding: "8px 14px",
-            borderRadius: "999px",
+            width: "100%",
+            padding: "12px 24px",
+            borderRadius: "8px",
             border: "none",
-            background: saving ? "#4b5563" : "#22c55e",
-            color: "black",
+            background: saving ? "#CBD5E0" : "#00A651",
+            color: "white",
             fontWeight: 600,
-            cursor: saving ? "wait" : "pointer",
+            fontSize: "0.9rem",
+            cursor: saving ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            if (!saving) {
+              e.currentTarget.style.background = "#059669";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!saving) {
+              e.currentTarget.style.background = "#00A651";
+              e.currentTarget.style.transform = "translateY(0)";
+            }
           }}
         >
           {saving ? "Saving…" : "Save Update"}
         </button>
 
         {ticket.technicianNotes && ticket.technicianNotes.length > 0 && (
-          <div style={{ marginTop: "12px", fontSize: "0.85rem" }}>
-            <strong>Previous Notes:</strong>
-            <ul style={{ paddingLeft: "18px", marginTop: "4px" }}>
+          <div
+            style={{
+              marginTop: "24px",
+              padding: "16px",
+              borderRadius: "8px",
+              background: "#F5F7FA",
+              border: "1px solid #E2E8F0",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                color: "#1A1F36",
+                marginBottom: "12px",
+              }}
+            >
+              Previous Notes:
+            </div>
+            <ul style={{ paddingLeft: "20px", margin: 0, fontSize: "0.875rem", color: "#4A5568" }}>
               {ticket.technicianNotes.map((n: string, idx: number) => (
-                <li key={idx} style={{ marginBottom: "2px" }}>
+                <li key={idx} style={{ marginBottom: "8px", lineHeight: 1.5 }}>
                   {n}
                 </li>
               ))}
             </ul>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import CategoryPage from "./pages/CategoryPage";
 import ModelSelectPage from "./pages/ModelSelectPage";
@@ -14,6 +15,11 @@ import TechnicianDashboardPage from "./pages/TechnicianDashboardPage";
 import TechnicianTicketPage from "./pages/TechnicianTicketPage";
 import TechnicianLayout from "./pages/TechnicianLayout";
 import RegisteredMachinesPage from "./pages/RegisteredMachinesPage";
+import MachineDetailsPage from "./pages/MachineDetailsPage";
+import ContactSupportPage from "./pages/ContactSupportPage";
+import ProfilePage from "./pages/ProfilePage";
+import AIAssistantPage from "./pages/AIAssistantPage";
+import AITrainingPortalPage from "./pages/AITrainingPortalPage";
 
 function App() {
   return (
@@ -31,9 +37,13 @@ function App() {
           element={<SerialListPage />}
         />
         <Route path="/machines/registered" element={<RegisteredMachinesPage />} />
+        <Route path="/machines/details/:serialNumber" element={<MachineDetailsPage />} />
 
         <Route path="/ticket" element={<TicketPage />} />
         <Route path="/tickets/history" element={<TicketHistoryPage />} />
+        <Route path="/contact" element={<ContactSupportPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/ai/assistant" element={<AIAssistantPage />} />
         <Route path="/ai/image-demo" element={<ImageDiagnosisDemoPage />} />
       </Route>
 
@@ -44,6 +54,7 @@ function App() {
         <Route path="/tech/dashboard" element={<TechnicianDashboardPage />} />
         <Route path="/tech/tickets/:ticketId" element={<TechnicianTicketPage />} />
         <Route path="/tech/history" element={<div>Completed Tickets Coming Soon</div>} />
+        <Route path="/tech/ai-training" element={<AITrainingPortalPage />} />
         <Route path="/technician" element={<TechnicianDashboardPage />} />
       </Route>
 

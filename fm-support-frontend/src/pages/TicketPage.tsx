@@ -1,9 +1,10 @@
 // src/pages/TicketPage.tsx
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { createTicket } from "../api";
-
-type IssueType = "THREAD_BREAKING" | "STITCH_SKIPPING" | "FABRIC_NOT_FEEDING";
+import { useState, useEffect, useRef } from "react";
+import { createTicket, fetchMachines, fetchMachineInstances } from "../api";
+import type { IssueType, Machine, MachineInstance } from "../types";
+import Card from "../components/Card";
+import Icon from "../components/Icon";
 
 type TicketLocationState = {
   modelId?: string;
@@ -14,261 +15,372 @@ type TicketLocationState = {
 export default function TicketPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { modelId, serial, machineImage } = (location.state || {}) as TicketLocationState;
+  const { modelId, serial } = (location.state || {}) as TicketLocationState;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [issueType, setIssueType] = useState<IssueType>("THREAD_BREAKING");
+  const [machines, setMachines] = useState<Machine[]>([]);
+  const [machineInstances, setMachineInstances] = useState<MachineInstance[]>([]);
+  const [selectedMachineId, setSelectedMachineId] = useState<string>("");
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState<string>(serial || "");
+  const [issueType, setIssueType] = useState<IssueType | "">("");
   const [description, setDescription] = useState("");
-  const [aiResult, setAiResult] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<{
+    machine?: string;
+    issueType?: string;
+    description?: string;
+    files?: string;
+  }>({});
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  async function handleSubmit() {
+  useEffect(() => {
+    async function loadMachines() {
+      try {
+        const machinesData = await fetchMachines();
+        setMachines(machinesData);
+        
+        // If modelId is provided, try to find and select it
+        if (modelId) {
+          const matchingMachine = machinesData.find(m => m.id === modelId);
+          if (matchingMachine) {
+            setSelectedMachineId(matchingMachine.id);
+            loadInstances(matchingMachine.id);
+          }
+        } else if (machinesData.length > 0) {
+          setSelectedMachineId(machinesData[0].id);
+          loadInstances(machinesData[0].id);
+        }
+      } catch (err) {
+        console.error("Failed to load machines", err);
+      }
+    }
+    loadMachines();
+  }, []);
+
+  async function loadInstances(machineId: string) {
+    if (!machineId || machineId.trim() === "") {
+      console.warn("Cannot load instances: machineId is empty");
+      setMachineInstances([]);
+      return;
+    }
+    
+    try {
+      const instances = await fetchMachineInstances(machineId);
+      setMachineInstances(instances);
+      if (serial && instances.find(i => i.serialNumber === serial)) {
+        setSelectedSerialNumber(serial);
+      } else if (instances.length > 0) {
+        setSelectedSerialNumber(instances[0].serialNumber);
+      }
+    } catch (err) {
+      console.error("Failed to load instances", err);
+      setMachineInstances([]);
+    }
+  }
+
+  function handleMachineChange(machineId: string) {
+    if (!machineId || machineId.trim() === "") {
+      setSelectedMachineId("");
+      setSelectedSerialNumber("");
+      setMachineInstances([]);
+      return;
+    }
+    setSelectedMachineId(machineId);
+    setSelectedSerialNumber("");
+    loadInstances(machineId);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const validFiles: File[] = [];
+    const fileErrors: string[] = [];
+
+    files.forEach((file) => {
+      if (file.size > maxSize) {
+        fileErrors.push(`${file.name} exceeds 5MB limit`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (fileErrors.length > 0) {
+      setErrors({ ...errors, files: fileErrors.join(", ") });
+    } else {
+      setErrors({ ...errors, files: undefined });
+      setAttachedFiles([...attachedFiles, ...validFiles]);
+    }
+  }
+
+  function removeFile(index: number) {
+    setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
+  }
+
+  function validate(): boolean {
+    const newErrors: typeof errors = {};
+
+    if (!selectedMachineId) {
+      newErrors.machine = "Please select a machine";
+    }
+    if (!selectedSerialNumber) {
+      newErrors.machine = "Please select a serial number";
+    }
+    if (!issueType) {
+      newErrors.issueType = "Please select an issue type";
+    }
+    if (!description.trim()) {
+      newErrors.description = "Please provide a description";
+    }
+
+    setErrors(newErrors);
+
+    // Focus on first empty field
+    if (newErrors.machine) {
+      document.querySelector<HTMLSelectElement>('select[name="machine"]')?.focus();
+      return false;
+    }
+    if (newErrors.issueType) {
+      document.querySelector<HTMLSelectElement>('select[name="issueType"]')?.focus();
+      return false;
+    }
+    if (newErrors.description) {
+      document.querySelector<HTMLTextAreaElement>('textarea[name="description"]')?.focus();
+      return false;
+    }
+
+    return Object.keys(newErrors).length === 0;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
     try {
       setSubmitting(true);
-      setError(null);
-      setAiResult(null);
+      setErrors({});
 
-      // For demo i send machineId "m1" (backend expects existing machine)
       const payload = {
-        machineId: "m1",
-        createdByUserId: "u1",
-        issueType,
-        description: `[Model: ${modelId}, Serial: ${serial}] ${description}`,
+        machineId: selectedMachineId,
+        createdByUserId: "u1", // Mock user ID
+        issueType: issueType as IssueType,
+        description: `[Serial: ${selectedSerialNumber}] ${description}`,
       };
 
-      const res = await createTicket(payload);
-      setAiResult(res.ticket.aiSuggestion);
+      await createTicket(payload);
+      setSuccess(true);
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate("/tickets/history");
+      }, 2000);
     } catch (err: any) {
       console.error(err);
-      setError("Failed to create ticket or call AI.");
+      setErrors({ description: "Failed to create ticket. Please try again." });
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (!modelId || !serial) {
+  function handleCancel() {
+    navigate("/dashboard");
+  }
+
+  if (success) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020617",
-          color: "white",
-          padding: "24px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        <h2 style={{ fontSize: "1.1rem", marginBottom: "8px" }}>
-          Missing machine information
-        </h2>
-        <p style={{ fontSize: "0.9rem", opacity: 0.8, marginBottom: "12px" }}>
-          Please select a machine again and then report an issue.
-        </p>
-        <button
-          onClick={() => navigate("/categories")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: "999px",
-            border: "none",
-            background: "#22c55e",
-            color: "black",
-            fontWeight: 600,
-            fontSize: "0.85rem",
-            cursor: "pointer",
-          }}
-        >
-          Back to Report Machine Issue
-        </button>
+      <div className="page-container">
+        <Card className="success-card">
+          <div className="success-content">
+            <Icon name="check" />
+            <h2 className="success-title">Problem Reported Successfully!</h2>
+            <p className="success-message">Our technician will contact you within 2 hours. Redirecting to your tickets...</p>
+          </div>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      {/* Header row: title + AI image demo button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "12px",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
-      >
-        <h2 style={{ fontSize: "1.4rem" }}>Report Issue</h2>
-
-        <button
-          onClick={() => navigate("/ai/image-demo")}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "999px",
-            border: "none",
-            background: "#22c55e",
-            color: "black",
-            fontSize: "0.85rem",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Try AI Image Diagnosis (Demo)
+    <div className="page-container">
+      <div className="header-row">
+        <div>
+          <h1 className="page-title">Report a Problem</h1>
+          <p className="page-subtitle">Tell us what's wrong with your machine and we'll help you fix it</p>
+        </div>
+        <button onClick={handleCancel} className="secondary-button">
+          Cancel
         </button>
       </div>
 
-      {/* Machine info */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "16px",
-          marginBottom: "16px",
-          alignItems: "center",
-        }}
-      >
-        {machineImage && (
-          <img
-            src={machineImage}
-            alt={modelId}
-            style={{
-              width: "120px",
-              height: "120px",
-              objectFit: "contain",
-              borderRadius: "8px",
-              border: "1px solid #1f2937",
-              background: "#020617",
-            }}
-          />
-        )}
-        <div>
-          <div style={{ marginBottom: "4px", fontSize: "0.95rem" }}>
-            <strong>Model:</strong> {modelId}
+      <Card className="ticket-form-card">
+        <form onSubmit={handleSubmit}>
+          {/* Machine Selection */}
+          <div className="form-group">
+            <label className="form-label required">
+              Machine
+            </label>
+            <select
+              name="machine"
+              value={selectedMachineId}
+              onChange={(e) => handleMachineChange(e.target.value)}
+              className={`form-select ${errors.machine ? "error" : ""}`}
+            >
+              <option value="">Select a machine</option>
+              {machines.map((machine) => (
+                <option key={machine.id} value={machine.id}>
+                  {machine.model} - {machine.name}
+                </option>
+              ))}
+            </select>
+            {errors.machine && (
+              <div className="error-message">{errors.machine}</div>
+            )}
           </div>
-          <div style={{ marginBottom: "4px", fontSize: "0.95rem" }}>
-            <strong>Serial:</strong> {serial}
+
+          {/* Serial Number Selection */}
+          {selectedMachineId && machineInstances.length > 0 && (
+            <div className="form-group">
+              <label className="form-label required">
+                Serial Number
+              </label>
+              <select
+                value={selectedSerialNumber}
+                onChange={(e) => setSelectedSerialNumber(e.target.value)}
+                className={`form-select ${errors.machine ? "error" : ""}`}
+              >
+                <option value="">Select serial number</option>
+                {machineInstances.map((instance) => (
+                  <option key={instance.id} value={instance.serialNumber}>
+                    {instance.serialNumber}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Issue Type */}
+          <div className="form-group">
+            <label className="form-label required">
+              What's the Problem?
+            </label>
+            <select
+              name="issueType"
+              value={issueType}
+              onChange={(e) => setIssueType(e.target.value as IssueType)}
+              className={`form-select ${errors.issueType ? "error" : ""}`}
+            >
+              <option value="">Select the problem type</option>
+              <option value="THREAD_BREAKING">Thread Breaking - Machine keeps breaking thread while sewing</option>
+              <option value="STITCH_SKIPPING">Stitch Skipping - Machine is missing stitches</option>
+              <option value="FABRIC_NOT_FEEDING">Fabric Not Feeding - Material is not moving through machine</option>
+            </select>
+            {errors.issueType && (
+              <div className="error-message">{errors.issueType}</div>
+            )}
           </div>
-        </div>
-      </div>
 
-      {/* Issue type */}
-      <div style={{ marginBottom: "12px" }}>
-        <label
-          style={{ display: "block", marginBottom: "4px", fontSize: "0.95rem" }}
-        >
-          Issue Type
-        </label>
-        <select
-          value={issueType}
-          onChange={(e) => setIssueType(e.target.value as IssueType)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            borderRadius: "8px",
-            border: "1px solid #374151",
-            background: "#020617",
-            color: "white",
-            fontSize: "0.9rem",
-          }}
-        >
-          <option value="THREAD_BREAKING">Thread breaking</option>
-          <option value="STITCH_SKIPPING">Stitch skipping</option>
-          <option value="FABRIC_NOT_FEEDING">Fabric not feeding</option>
-        </select>
-      </div>
-
-      {/* Description */}
-      <div style={{ marginBottom: "12px" }}>
-        <label
-          style={{ display: "block", marginBottom: "4px", fontSize: "0.95rem" }}
-        >
-          Description
-        </label>
-        <textarea
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            borderRadius: "8px",
-            border: "1px solid #374151",
-            background: "#020617",
-            color: "white",
-            resize: "vertical",
-            fontSize: "0.9rem",
-          }}
-          placeholder="Example: Thread breaking at high speed on Lycra..."
-        />
-      </div>
-
-      {/* Submit */}
-      <button
-        onClick={handleSubmit}
-        disabled={submitting || !description.trim()}
-        style={{
-          padding: "8px 16px",
-          borderRadius: "999px",
-          border: "none",
-          background: submitting ? "#4b5563" : "#22c55e",
-          color: "black",
-          fontWeight: 600,
-          fontSize: "0.9rem",
-          cursor: submitting || !description.trim() ? "default" : "pointer",
-          opacity: submitting || !description.trim() ? 0.7 : 1,
-        }}
-      >
-        {submitting ? "Submitting..." : "Submit Ticket & Ask AI"}
-      </button>
-
-      {/* Error */}
-      {error && (
-        <div
-          style={{
-            marginTop: "8px",
-            color: "#f97373",
-            fontSize: "0.9rem",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* AI result */}
-      {aiResult && (
-        <div
-          style={{
-            marginTop: "16px",
-            padding: "12px",
-            borderRadius: "10px",
-            background: "#020617",
-            border: "1px dashed #374151",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              marginBottom: "6px",
-            }}
-          >
-            AI Suggestion
+          {/* Description */}
+          <div className="form-group">
+            <label className="form-label required">
+              Describe the Problem
+            </label>
+            <textarea
+              name="description"
+              rows={5}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Tell us more about what's happening with your machine..."
+              className={`form-textarea ${errors.description ? "error" : ""}`}
+            />
+            <div className="form-help-text" style={{ marginTop: "8px", fontSize: "0.875rem", color: "var(--zoje-text-secondary)" }}>
+              <strong>Helpful information to include:</strong>
+              <ul style={{ margin: "8px 0 0 20px" }}>
+                <li>When did the problem start?</li>
+                <li>What were you doing when it happened?</li>
+                <li>How often does it occur?</li>
+                <li>Any unusual sounds or error messages?</li>
+              </ul>
+            </div>
+            {errors.description && (
+              <div className="error-message">{errors.description}</div>
+            )}
           </div>
-          <div style={{ fontSize: "0.9rem", marginBottom: "6px" }}>
-            {aiResult.text}
+
+          {/* Attach Images */}
+          <div className="form-group">
+            <label className="form-label">
+              Add Photos (Optional but Helpful)
+            </label>
+            <div className="form-help-text" style={{ marginBottom: "12px", fontSize: "0.875rem", color: "var(--zoje-text-secondary)" }}>
+              Take photos of: the problem area, any error messages, and the machine label/serial number
+            </div>
+            <div className="file-upload-area">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileSelect}
+                className="file-input"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="file-upload-button"
+              >
+                <Icon name="upload" />
+                Choose Photos
+              </button>
+              <span className="file-upload-hint">Max 5MB per file</span>
+            </div>
+            {errors.files && (
+              <div className="error-message">{errors.files}</div>
+            )}
+            {attachedFiles.length > 0 && (
+              <div className="attached-files-list">
+                {attachedFiles.map((file, index) => (
+                  <div key={index} className="attached-file-item">
+                    <Icon name="document" />
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">
+                      ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="remove-file-button"
+                    >
+                      <Icon name="close" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
-            From cache: {aiResult.fromCache ? "Yes (free)" : "No"}
-            {" · "}
-            Credits used: {aiResult.creditsUsed}
+
+          {/* Form Actions */}
+          <div className="form-actions">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="secondary-button"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={submitting}
+            >
+              {submitting ? "Submitting..." : "Submit Report"}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Card>
     </div>
   );
 }

@@ -1,100 +1,54 @@
 // src/pages/CategoryPage.tsx
 import { useNavigate } from "react-router-dom";
+import { machineCategories } from "../data/categories";
 import { modelsByCategory } from "../data/models";
-import { BASE_URL } from "../api"; 
+import { resolveImageUrl } from "../utils/imageUtils";
+import Card from "../components/Card"; 
 
 export default function CategoryPage() {
   const navigate = useNavigate();
 
-  const categories = Object.keys(modelsByCategory); // lockstitch / overlock / welting
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      <h2 style={{ fontSize: "1.4rem", marginBottom: "16px" }}>
-        Choose Machine Category
-      </h2>
+    <div className="page-container">
+      <div className="header-row">
+        <div>
+          <h2 className="page-title">Select Machine Category</h2>
+          <p className="page-subtitle">
+            Choose a category to view available machine models
+          </p>
+        </div>
+      </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "16px",
-        }}
-      >
-        {categories.map((categoryId) => {
-          const models = modelsByCategory[categoryId];
+      <div className="category-grid">
+        {machineCategories.map((category) => {
+          const models = modelsByCategory[category.id] || [];
           const sampleModel = models[0];
 
-          // build correct image URL for mobile
-          const imageUrl = sampleModel?.image
-            ? `${BASE_URL}${sampleModel.image}` // ⬅️ IMPORTANT
-            : "";
-
-          const label =
-            categoryId === "lockstitch"
-              ? "Lockstitch"
-              : categoryId === "overlock"
-              ? "Overlock"
-              : categoryId === "welting"
-              ? "Pocket Welting"
-              : categoryId;
+          // build correct image URL
+          const imageUrl = resolveImageUrl(sampleModel?.image);
 
           return (
-            <button
-              key={categoryId}
-              onClick={() => navigate(`/machines/${categoryId}`)}
-              style={{
-                textAlign: "left",
-                borderRadius: "16px",
-                border: "1px solid #1f2937",
-                background: "#020617",
-                padding: "14px",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
+            <Card
+              key={category.id}
+              onClick={() => navigate(`/machines/${category.id}`)}
+              className="category-card"
             >
               {imageUrl && (
                 <img
                   src={imageUrl}
-                  alt={sampleModel?.name ?? label}
-                  style={{
-                    width: "100%",
-                    height: "140px",
-                    objectFit: "contain",
-                    borderRadius: "10px",
-                    background: "#020617",
-                  }}
+                  alt={category.name}
+                  className="category-image"
                 />
               )}
 
-              <div
-                style={{
-                  fontSize: "1.05rem",
-                  fontWeight: 600,
-                  marginTop: "4px",
-                }}
-              >
-                {label}
+              <div>
+                <div className="category-title">{category.name}</div>
+                <div className="category-description">{category.description}</div>
+                <div className="category-model-count">
+                  {models.length} {models.length === 1 ? "model" : "models"} available
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: "0.85rem",
-                  opacity: 0.75,
-                }}
-              >
-                {models.length} demo models registered
-              </div>
-            </button>
+            </Card>
           );
         })}
       </div>

@@ -1,6 +1,7 @@
 // src/pages/ImageDiagnosisDemoPage.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import Card from "../components/Card";
 
 type VisualIssueType =
   | "THREAD_BREAKING"
@@ -40,7 +41,6 @@ export default function ImageDiagnosisDemoPage() {
     setRunning(true);
     setAnalysis(null);
 
-    // Simulate AI thinking for demo
     setTimeout(() => {
       const result = buildDemoAnalysis(visualIssue);
       setAnalysis(result);
@@ -51,54 +51,56 @@ export default function ImageDiagnosisDemoPage() {
   const canRun = !!selectedFile;
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      {/* Header row */}
+    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      {/* Header */}
       <div
         style={{
           display: "flex",
           flexWrap: "wrap",
           justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 18,
+          alignItems: "flex-start",
+          gap: "16px",
+          marginBottom: "24px",
         }}
       >
         <div>
-          <h2 style={{ fontSize: "1.3rem", marginBottom: 4 }}>
+          <h2 style={{ fontSize: "1.75rem", marginBottom: "8px", color: "#1A1F36", fontWeight: 600 }}>
             AI Image Diagnosis (Demo)
           </h2>
           <p
             style={{
-              fontSize: "0.85rem",
-              opacity: 0.75,
-              maxWidth: 480,
+              fontSize: "0.95rem",
+              color: "#718096",
+              maxWidth: "600px",
             }}
           >
-            Upload a clear photo of the sewing problem (stitches, needle, or feed area). 
-            FM AI will simulate how it could highlight likely causes & checks—this is a
-            demo only, no real image processing yet.
+            Upload a clear photo of the sewing problem (stitches, needle, or feed area). Zoje AI
+            will simulate how it could highlight likely causes & checks—this is a demo only, no
+            real image processing yet.
           </p>
         </div>
 
         <button
           onClick={() => navigate("/ticket")}
           style={{
-            alignSelf: "flex-start",
-            padding: "6px 12px",
-            borderRadius: "999px",
-            border: "1px solid #374151",
-            background: "#020617",
-            color: "white",
-            fontSize: "0.8rem",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            border: "1px solid #E2E8F0",
+            background: "#FFFFFF",
+            color: "#4A5568",
+            fontSize: "0.875rem",
+            fontWeight: 500,
             cursor: "pointer",
             whiteSpace: "nowrap",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#F5F7FA";
+            e.currentTarget.style.borderColor = "#CBD5E0";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#FFFFFF";
+            e.currentTarget.style.borderColor = "#E2E8F0";
           }}
         >
           ← Back to Report Issue
@@ -109,25 +111,18 @@ export default function ImageDiagnosisDemoPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 1fr)",
-          gap: 18,
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+          gap: "24px",
         }}
       >
         {/* Left: upload + options */}
-        <section
-          style={{
-            padding: 16,
-            borderRadius: 16,
-            border: "1px solid #1f2937",
-            background: "rgba(15,23,42,0.95)",
-            boxShadow: "0 18px 40px rgba(0,0,0,0.5)",
-          }}
-        >
+        <Card style={{ padding: "24px" }}>
           <h3
             style={{
-              fontSize: "0.95rem",
-              marginBottom: 10,
+              fontSize: "1.1rem",
+              marginBottom: "16px",
               fontWeight: 600,
+              color: "#1A1F36",
             }}
           >
             1. Upload a photo of the problem
@@ -139,41 +134,52 @@ export default function ImageDiagnosisDemoPage() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: 8,
-              borderRadius: 12,
-              border: "1px dashed #374151",
-              padding: "18px 12px",
+              gap: "12px",
+              borderRadius: "12px",
+              border: "2px dashed #CBD5E0",
+              padding: "32px 20px",
               cursor: "pointer",
-              background:
-                "radial-gradient(circle at 10% 0%, rgba(34,197,94,0.08), transparent 60%)",
+              background: "#F5F7FA",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#0066CC";
+              e.currentTarget.style.background = "#E6F2FF";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#CBD5E0";
+              e.currentTarget.style.background = "#F5F7FA";
             }}
           >
             <div
               style={{
-                width: 42,
-                height: 42,
-                borderRadius: "999px",
-                border: "1px solid #22c55e33",
+                width: "48px",
+                height: "48px",
+                borderRadius: "12px",
+                background: "#0066CC",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "1.2rem",
+                fontSize: "1.5rem",
+                color: "white",
               }}
             >
               📷
             </div>
             <div
               style={{
-                fontSize: "0.85rem",
-                fontWeight: 500,
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                color: "#1A1F36",
               }}
             >
               Click to upload image
             </div>
             <div
               style={{
-                fontSize: "0.75rem",
-                opacity: 0.75,
+                fontSize: "0.875rem",
+                color: "#718096",
+                textAlign: "center",
               }}
             >
               Close-up of stitches, needle area, or feed dog is best.
@@ -189,9 +195,13 @@ export default function ImageDiagnosisDemoPage() {
           {selectedFile && (
             <div
               style={{
-                marginTop: 12,
-                fontSize: "0.75rem",
-                opacity: 0.8,
+                marginTop: "16px",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                background: "#E6F2FF",
+                border: "1px solid #B3D9FF",
+                fontSize: "0.875rem",
+                color: "#1A1F36",
               }}
             >
               Selected file: <strong>{selectedFile.name}</strong>
@@ -201,11 +211,11 @@ export default function ImageDiagnosisDemoPage() {
           {previewUrl && (
             <div
               style={{
-                marginTop: 14,
-                borderRadius: 12,
+                marginTop: "16px",
+                borderRadius: "12px",
                 overflow: "hidden",
-                border: "1px solid #1f2937",
-                background: "#020617",
+                border: "1px solid #E2E8F0",
+                background: "#F5F7FA",
               }}
             >
               <img
@@ -213,7 +223,7 @@ export default function ImageDiagnosisDemoPage() {
                 alt="Preview"
                 style={{
                   width: "100%",
-                  maxHeight: 260,
+                  maxHeight: "300px",
                   objectFit: "contain",
                   display: "block",
                 }}
@@ -222,24 +232,25 @@ export default function ImageDiagnosisDemoPage() {
           )}
 
           {/* Visual issue selection */}
-          <div style={{ marginTop: 18 }}>
+          <div style={{ marginTop: "24px" }}>
             <h3
               style={{
-                fontSize: "0.95rem",
-                marginBottom: 6,
+                fontSize: "1rem",
+                marginBottom: "8px",
                 fontWeight: 600,
+                color: "#1A1F36",
               }}
             >
               2. What does the problem look like?
             </h3>
             <p
               style={{
-                fontSize: "0.75rem",
-                opacity: 0.75,
-                marginBottom: 8,
+                fontSize: "0.875rem",
+                color: "#718096",
+                marginBottom: "12px",
               }}
             >
-              This helps the demo “AI” choose the right explanation overlay.
+              This helps the demo "AI" choose the right explanation overlay.
             </p>
 
             <select
@@ -247,19 +258,27 @@ export default function ImageDiagnosisDemoPage() {
               onChange={(e) => setVisualIssue(e.target.value as VisualIssueType)}
               style={{
                 width: "100%",
-                padding: "8px",
-                borderRadius: 10,
-                border: "1px solid #374151",
-                background: "#020617",
-                color: "white",
-                fontSize: "0.85rem",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "1px solid #E2E8F0",
+                background: "#FFFFFF",
+                color: "#1A1F36",
+                fontSize: "0.9rem",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0066CC";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 102, 204, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#E2E8F0";
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <option value="THREAD_BREAKING">
-                Thread broken or missing in the seam
-              </option>
+              <option value="THREAD_BREAKING">Thread broken or missing in the seam</option>
               <option value="SKIP_STITCH">Skipped stitches along the seam</option>
-              <option value="BIRDS_NEST">Bird’s nest / thread bunching below</option>
+              <option value="BIRDS_NEST">Bird's nest / thread bunching below</option>
               <option value="NEEDLE_MARKS">Needle marks / holes on fabric</option>
               <option value="UNEVEN_STITCH">Uneven stitch length / tension</option>
             </select>
@@ -270,20 +289,29 @@ export default function ImageDiagnosisDemoPage() {
             onClick={runDemoAnalysis}
             disabled={!canRun || running}
             style={{
-              marginTop: 16,
-              padding: "8px 16px",
-              borderRadius: 999,
+              marginTop: "20px",
+              width: "100%",
+              padding: "12px 24px",
+              borderRadius: "8px",
               border: "none",
-              background: !canRun
-                ? "#4b5563"
-                : running
-                ? "#16a34a99"
-                : "#22c55e",
-              color: "black",
+              background: !canRun || running ? "#CBD5E0" : "#0066CC",
+              color: "white",
               fontWeight: 600,
               fontSize: "0.9rem",
-              cursor: !canRun || running ? "default" : "pointer",
-              opacity: !canRun ? 0.6 : 1,
+              cursor: !canRun || running ? "not-allowed" : "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              if (canRun && !running) {
+                e.currentTarget.style.background = "#0052A3";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (canRun && !running) {
+                e.currentTarget.style.background = "#0066CC";
+                e.currentTarget.style.transform = "translateY(0)";
+              }
             }}
           >
             {running
@@ -295,138 +323,161 @@ export default function ImageDiagnosisDemoPage() {
 
           <p
             style={{
-              marginTop: 8,
-              fontSize: "0.7rem",
-              opacity: 0.65,
+              marginTop: "12px",
+              fontSize: "0.8rem",
+              color: "#718096",
             }}
           >
-            Demo only: in a real version, FM AI would analyze the pixels, detect
-            stitch patterns, and map them to an internal problem library.
+            Demo only: in a real version, Zoje AI would analyze the pixels, detect stitch patterns,
+            and map them to an internal problem library.
           </p>
-        </section>
+        </Card>
 
         {/* Right: AI demo output */}
-        <section
-          style={{
-            padding: 16,
-            borderRadius: 16,
-            border: "1px solid #1f2937",
-            background: "rgba(15,23,42,0.95)",
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-          }}
-        >
+        <Card style={{ padding: "24px" }}>
           <h3
             style={{
-              fontSize: "0.95rem",
+              fontSize: "1.1rem",
               fontWeight: 600,
-              marginBottom: 4,
+              marginBottom: "8px",
+              color: "#1A1F36",
             }}
           >
             3. AI Diagnosis Preview
           </h3>
           <p
             style={{
-              fontSize: "0.75rem",
-              opacity: 0.75,
-              marginBottom: 6,
+              fontSize: "0.875rem",
+              color: "#718096",
+              marginBottom: "20px",
             }}
           >
-            FM AI will explain what it “sees” in the
-            stitch image and guide the operator step by step.
+            Zoje AI will explain what it "sees" in the stitch image and guide the operator step
+            by step.
           </p>
 
           {!analysis && (
             <div
               style={{
-                marginTop: 8,
-                padding: 14,
-                borderRadius: 12,
-                border: "1px dashed #374151",
-                fontSize: "0.8rem",
-                opacity: 0.8,
-                color: "#9ca3af",
+                padding: "32px",
+                borderRadius: "12px",
+                border: "2px dashed #E2E8F0",
+                textAlign: "center",
+                background: "#F5F7FA",
               }}
             >
-              Upload a photo on the left and click{" "}
-              <strong>“Run AI Demo”</strong> to see a sample diagnosis.
+              <p style={{ fontSize: "0.9rem", color: "#718096", margin: 0 }}>
+                Upload a photo on the left and click <strong>"Run AI Demo"</strong> to see a
+                sample diagnosis.
+              </p>
             </div>
           )}
 
           {analysis && (
             <div
               style={{
-                marginTop: 6,
-                padding: 14,
-                borderRadius: 12,
-                border: "1px solid #374151",
-                background:
-                  "radial-gradient(circle at 0% 0%, rgba(34,197,94,0.12), #020617)",
-                fontSize: "0.8rem",
+                padding: "24px",
+                borderRadius: "12px",
+                border: "1px solid #B3D9FF",
+                background: "#E6F2FF",
               }}
             >
               <div
                 style={{
-                  fontSize: "0.95rem",
-                  fontWeight: 600,
-                  marginBottom: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginBottom: "16px",
                 }}
               >
-                {analysis.title}
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    background: "#0066CC",
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  AI
+                </div>
+                <div
+                  style={{
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    color: "#1A1F36",
+                  }}
+                >
+                  {analysis.title}
+                </div>
               </div>
               <p
                 style={{
-                  marginBottom: 8,
-                  lineHeight: 1.5,
+                  marginBottom: "20px",
+                  lineHeight: 1.6,
+                  color: "#1A1F36",
+                  fontSize: "0.95rem",
                 }}
               >
                 {analysis.summary}
               </p>
 
-              <div style={{ marginBottom: 6 }}>
+              <div style={{ marginBottom: "20px" }}>
                 <div
                   style={{
-                    fontSize: "0.8rem",
+                    fontSize: "0.9rem",
                     fontWeight: 600,
-                    marginBottom: 4,
+                    marginBottom: "12px",
+                    color: "#1A1F36",
                   }}
                 >
-                  Probable causes FM AI would highlight:
+                  Probable causes Zoje AI would highlight:
                 </div>
                 <ul
                   style={{
-                    paddingLeft: 18,
+                    paddingLeft: "20px",
                     margin: 0,
                     listStyle: "disc",
+                    fontSize: "0.9rem",
+                    color: "#1A1F36",
+                    lineHeight: 1.8,
                   }}
                 >
                   {analysis.probableCauses.map((c, i) => (
-                    <li key={i} style={{ marginBottom: 2 }}>
+                    <li key={i} style={{ marginBottom: "6px" }}>
                       {c}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div style={{ marginBottom: 6 }}>
+              <div style={{ marginBottom: "20px" }}>
                 <div
                   style={{
-                    fontSize: "0.8rem",
+                    fontSize: "0.9rem",
                     fontWeight: 600,
-                    marginBottom: 4,
+                    marginBottom: "12px",
+                    color: "#1A1F36",
                   }}
                 >
                   Recommended checks for the operator:
                 </div>
                 <ol
                   style={{
-                    paddingLeft: 18,
+                    paddingLeft: "20px",
                     margin: 0,
+                    fontSize: "0.9rem",
+                    color: "#1A1F36",
+                    lineHeight: 1.8,
                   }}
                 >
                   {analysis.recommendedChecks.map((step, i) => (
-                    <li key={i} style={{ marginBottom: 2 }}>
+                    <li key={i} style={{ marginBottom: "6px" }}>
                       {step}
                     </li>
                   ))}
@@ -435,16 +486,19 @@ export default function ImageDiagnosisDemoPage() {
 
               <div
                 style={{
-                  marginTop: 6,
-                  fontSize: "0.75rem",
-                  opacity: 0.75,
+                  marginTop: "16px",
+                  paddingTop: "16px",
+                  borderTop: "1px solid #B3D9FF",
+                  fontSize: "0.85rem",
+                  color: "#4A5568",
+                  fontStyle: "italic",
                 }}
               >
                 {analysis.note}
               </div>
             </div>
           )}
-        </section>
+        </Card>
       </div>
     </div>
   );
@@ -457,7 +511,7 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
       return {
         title: "Detected pattern: frequent thread breakage in the seam",
         summary:
-          "From this type of image, FM AI would focus on the needle area, thread path, and tension points. The pattern of broken or missing top thread suggests instability in thread path or tension, especially at higher speeds.",
+          "From this type of image, Zoje AI would focus on the needle area, thread path, and tension points. The pattern of broken or missing top thread suggests instability in thread path or tension, especially at higher speeds.",
         probableCauses: [
           "Top thread tension too high or passing through a sharp edge",
           "Needle size too small for the fabric/thread combination",
@@ -471,14 +525,14 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
           "Lower the top tension slightly and test on a scrap piece at different speeds.",
         ],
         note:
-          "In a live version, FM AI could highlight the exact region where the thread is failing and overlay arrows or circles on the image to show where to check first.",
+          "In a live version, Zoje AI could highlight the exact region where the thread is failing and overlay arrows or circles on the image to show where to check first.",
       };
 
     case "SKIP_STITCH":
       return {
         title: "Detected pattern: skipped stitches along the seam line",
         summary:
-          "The spacing of missing stitches suggests a hook–needle timing or needle penetration issue. FM AI would analyze the seam line and look for gaps in the top thread pattern.",
+          "The spacing of missing stitches suggests a hook–needle timing or needle penetration issue. Zoje AI would analyze the seam line and look for gaps in the top thread pattern.",
         probableCauses: [
           "Hook–needle timing slightly out of adjustment",
           "Incorrect needle type or size for this fabric (especially on stretch / down jacket fabrics)",
@@ -492,14 +546,14 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
           "If skipping continues in the same spot, schedule a technician to inspect hook–needle timing.",
         ],
         note:
-          "In a live system, FM AI could overlay a heat map along the seam, showing where skipped stitches are concentrated and linking to timing adjustment guides.",
+          "In a live system, Zoje AI could overlay a heat map along the seam, showing where skipped stitches are concentrated and linking to timing adjustment guides.",
       };
 
     case "BIRDS_NEST":
       return {
-        title: "Detected pattern: bird’s nest / thread bunching under the fabric",
+        title: "Detected pattern: bird's nest / thread bunching under the fabric",
         summary:
-          "The cluster of thread on the underside indicates poor top thread control or incorrect threading. FM AI would focus on the bobbin area and top thread path in this region.",
+          "The cluster of thread on the underside indicates poor top thread control or incorrect threading. Zoje AI would focus on the bobbin area and top thread path in this region.",
         probableCauses: [
           "Top thread not properly placed in tension discs, effectively sewing with no tension",
           "Bobbin inserted incorrectly or bobbin tension too loose",
@@ -520,7 +574,7 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
       return {
         title: "Detected pattern: visible needle marks / holes on the fabric",
         summary:
-          "The distinct perforation marks around the seam suggest a mismatch between needle, fabric, and thread. FM AI would emphasize needle type recognition and fabric classification.",
+          "The distinct perforation marks around the seam suggest a mismatch between needle, fabric, and thread. Zoje AI would emphasize needle type recognition and fabric classification.",
         probableCauses: [
           "Needle tip too sharp or large for this delicate fabric",
           "Using regular needle on knit/stretch where ballpoint is needed",
@@ -542,7 +596,7 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
       return {
         title: "Detected pattern: uneven stitch length or tension imbalance",
         summary:
-          "The variation in stitch length and tension indicates inconsistent feeding or unbalanced tensions. FM AI would closely inspect the stitch line profile and the pull on top vs bottom thread.",
+          "The variation in stitch length and tension indicates inconsistent feeding or unbalanced tensions. Zoje AI would closely inspect the stitch line profile and the pull on top vs bottom thread.",
         probableCauses: [
           "Feed dog or presser foot not applying even pressure (worn, dirty, or misadjusted)",
           "Top and bobbin tensions not balanced for this fabric and thread",
@@ -553,10 +607,10 @@ function buildDemoAnalysis(issue: VisualIssueType): DemoAnalysis {
           "Clean the feed dog and presser foot; check for wear or damage.",
           "Reset thread tensions to a neutral baseline, then fine-tune both top and bobbin.",
           "Ask operator to let the machine feed the fabric without pulling/pushing.",
-          "Test with a standard reference fabric to confirm machine’s base behavior.",
+          "Test with a standard reference fabric to confirm machine's base behavior.",
         ],
         note:
-          "In a real version, FM AI could generate a before/after comparison on screen to show how stitch balance improves after tension corrections.",
+          "In a real version, Zoje AI could generate a before/after comparison on screen to show how stitch balance improves after tension corrections.",
       };
   }
 }

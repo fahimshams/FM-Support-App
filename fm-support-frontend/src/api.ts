@@ -45,6 +45,10 @@ export async function fetchMachines(): Promise<Machine[]> {
 export async function fetchMachineInstances(
   machineId: string
 ): Promise<MachineInstance[]> {
+  if (!machineId || machineId.trim() === "") {
+    throw new Error("Machine ID cannot be empty");
+  }
+  
   const res = await fetch(`${BASE_URL}/machines/${machineId}/instances`);
   if (!res.ok) {
     throw new Error(

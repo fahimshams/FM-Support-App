@@ -11,53 +11,55 @@ export default function TechnicianLayout() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0f172a",
-        color: "white",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        background: "#F5F7FA",
+        color: "#1A1F36",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
       }}
     >
       {/* Top Bar */}
       <header
         style={{
-          borderBottom: "1px solid #1e293b",
-          padding: "10px 16px",
+          borderBottom: "1px solid #E2E8F0",
+          padding: "16px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: "#0f172a",
+          background: "#FFFFFF",
           position: "sticky",
           top: 0,
-          zIndex: 20,
+          zIndex: 100,
+          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
         }}
       >
         {/* Left: Logo / Title */}
         <div
-          style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}
           onClick={() => navigate("/tech/dashboard")}
         >
           <div
             style={{
-              width: 26,
-              height: 26,
-              borderRadius: "999px",
-              background:
-                "radial-gradient(circle at 30% 30%, #3b82f6, #0f172a 70%)",
+              width: 40,
+              height: 40,
+              borderRadius: "10px",
+              background: "linear-gradient(135deg, #0052A3 0%, #0066CC 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "0.8rem",
+              fontSize: "1rem",
               fontWeight: 700,
+              color: "white",
+              boxShadow: "0 2px 4px rgba(0, 82, 163, 0.2)",
             }}
           >
-            FM
+            ZJ
           </div>
           {!isMobile && (
             <div>
-              <div style={{ fontSize: "0.9rem", fontWeight: 600 }}>
-                Technician Console
+              <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#1A1F36" }}>
+                Zoje Technician Console
               </div>
-              <div style={{ fontSize: "0.7rem", opacity: 0.7 }}>
-                Internal Service Panel
+              <div style={{ fontSize: "0.8rem", color: "#718096" }}>
+                Service Team Dashboard — Bangladesh
               </div>
             </div>
           )}
@@ -65,35 +67,51 @@ export default function TechnicianLayout() {
 
         {/* Right: Desktop nav + button OR Mobile hamburger */}
         {isMobile ? (
-          <div
+          <button
             onClick={() => setMenuOpen(!menuOpen)}
             style={{
-              fontSize: "1.4rem",
+              fontSize: "1.5rem",
               cursor: "pointer",
-              padding: "6px 8px",
+              padding: "8px",
               borderRadius: "8px",
-              background: menuOpen ? "#1e293b" : "transparent",
+              border: "none",
+              background: menuOpen ? "#E8ECF1" : "transparent",
+              color: "#1A1F36",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             ☰
-          </div>
+          </button>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <nav style={{ display: "flex", gap: "12px", fontSize: "0.85rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <nav style={{ display: "flex", gap: "8px", fontSize: "0.875rem" }}>
               <TechNavItem to="/tech/dashboard" label="My Tickets" />
               <TechNavItem to="/tech/history" label="Completed" />
+              <TechNavItem to="/tech/ai-training" label="AI Training" />
             </nav>
 
             <button
               onClick={() => navigate("/dashboard")}
               style={{
-                padding: "6px 10px",
-                borderRadius: "999px",
-                background: "#1e293b",
-                color: "white",
-                border: "1px solid #334155",
-                fontSize: "0.8rem",
+                padding: "8px 16px",
+                borderRadius: "8px",
+                background: "#FFFFFF",
+                color: "#0066CC",
+                border: "1px solid #E2E8F0",
+                fontSize: "0.875rem",
+                fontWeight: 500,
                 cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#F5F7FA";
+                e.currentTarget.style.borderColor = "#0066CC";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#FFFFFF";
+                e.currentTarget.style.borderColor = "#E2E8F0";
               }}
             >
               Back to Customer
@@ -106,10 +124,11 @@ export default function TechnicianLayout() {
       {isMobile && (
         <div
           style={{
-            background: "#020617",
-            borderBottom: "1px solid #1e293b",
-            padding: "12px 16px",
+            background: "#FFFFFF",
+            borderBottom: "1px solid #E2E8F0",
+            padding: "16px",
             display: menuOpen ? "block" : "none",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
           }}
         >
           <MobileTechNavItem
@@ -122,12 +141,17 @@ export default function TechnicianLayout() {
             label="Completed"
             onClick={() => setMenuOpen(false)}
           />
+          <MobileTechNavItem
+            to="/tech/ai-training"
+            label="AI Training"
+            onClick={() => setMenuOpen(false)}
+          />
 
           <div
             style={{
-              marginTop: 10,
-              paddingTop: 10,
-              borderTop: "1px solid #1e293b",
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: "1px solid #E2E8F0",
             }}
           >
             <button
@@ -137,13 +161,13 @@ export default function TechnicianLayout() {
               }}
               style={{
                 width: "100%",
-                padding: "10px 0",
+                padding: "12px",
                 borderRadius: "8px",
-                background: "#22c55e",
+                background: "#0066CC",
                 border: "none",
-                color: "black",
+                color: "white",
                 fontWeight: 600,
-                fontSize: "0.85rem",
+                fontSize: "0.9rem",
                 cursor: "pointer",
               }}
             >
@@ -154,7 +178,7 @@ export default function TechnicianLayout() {
       )}
 
       {/* Main content */}
-      <main style={{ padding: isMobile ? "14px" : "20px" }}>
+      <main style={{ padding: isMobile ? "16px" : "32px 24px", maxWidth: "1400px", margin: "0 auto" }}>
         <Outlet />
       </main>
     </div>
@@ -166,14 +190,14 @@ function TechNavItem({ to, label }: { to: string; label: string }) {
     <NavLink
       to={to}
       style={({ isActive }) => ({
-        padding: "6px 10px",
-        borderRadius: "999px",
+        padding: "8px 16px",
+        borderRadius: "8px",
         textDecoration: "none",
-        color: "white",
-        background: isActive ? "#1e293b" : "transparent",
-        border: isActive ? "1px solid #3b82f6" : "1px solid transparent",
-        fontWeight: isActive ? 600 : 400,
-        fontSize: "0.85rem",
+        color: isActive ? "#0066CC" : "#4A5568",
+        background: isActive ? "#E6F2FF" : "transparent",
+        fontWeight: isActive ? 600 : 500,
+        fontSize: "0.875rem",
+        transition: "all 0.2s ease",
       })}
     >
       {label}
@@ -196,10 +220,14 @@ function MobileTechNavItem({
       onClick={onClick}
       style={({ isActive }) => ({
         display: "block",
-        padding: "10px 0",
-        color: isActive ? "#3b82f6" : "white",
+        padding: "12px 0",
+        color: isActive ? "#0066CC" : "#4A5568",
         fontSize: "0.9rem",
+        fontWeight: isActive ? 600 : 400,
         textDecoration: "none",
+        borderLeft: isActive ? "3px solid #0066CC" : "3px solid transparent",
+        paddingLeft: "12px",
+        transition: "all 0.2s ease",
       })}
     >
       {label}

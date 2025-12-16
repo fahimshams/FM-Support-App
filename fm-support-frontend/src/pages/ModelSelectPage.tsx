@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { modelsByCategory } from "../data/models";
-import { BASE_URL } from "../api"; 
+import { resolveImageUrl } from "../utils/imageUtils";
+import Card from "../components/Card";
 
 export default function ModelSelectPage() {
   const { categoryId } = useParams();
@@ -10,85 +11,51 @@ export default function ModelSelectPage() {
 
   if (!models) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020617",
-          color: "white",
-          padding: "24px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        Invalid category.
+      <div className="page-container">
+        <Card className="text-center">
+          <h2 className="card-title">Invalid Category</h2>
+          <p className="page-subtitle">
+            Please select a valid machine category.
+          </p>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      <h2 style={{ fontSize: "1.4rem", marginBottom: "16px" }}>
-        Select Machine Model
-      </h2>
+    <div className="page-container">
+      <div className="header-row">
+        <div>
+          <h2 className="page-title">Select Machine Model</h2>
+          <p className="page-subtitle">
+            Choose a model from this category
+          </p>
+        </div>
+      </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "16px",
-        }}
-      >
+      <div className="model-grid">
         {models.map((m) => {
-          const imageUrl = m.image
-            ? `${BASE_URL}${m.image}` 
-            : "";
+          const imageUrl = resolveImageUrl(m.image);
 
           return (
-            <div
+            <Card
               key={m.id}
               onClick={() => navigate(`/machines/${categoryId}/${m.id}`)}
-              style={{
-                borderRadius: "12px",
-                border: "1px solid #1f2937",
-                background: "#020617",
-                padding: "16px",
-                cursor: "pointer",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                transition: "transform 0.15s ease, box-shadow 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform =
-                  "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform =
-                  "translateY(0)";
-              }}
+              className="model-card"
+              style={{ alignItems: "center" }}
             >
               {imageUrl && (
                 <img
                   src={imageUrl}
                   alt={m.name}
-                  style={{
-                    width: "100%",
-                    height: "160px",
-                    objectFit: "contain",
-                    marginBottom: "12px",
-                  }}
+                  className="model-image"
+                  style={{ marginBottom: "16px" }}
                 />
               )}
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>{m.name}</h3>
-            </div>
+              <h3 className="model-name" style={{ textAlign: "center" }}>
+                {m.name}
+              </h3>
+            </Card>
           );
         })}
       </div>

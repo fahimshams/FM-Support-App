@@ -14,33 +14,64 @@ export default function TechnicianLoginPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#020617",
+        background: "linear-gradient(135deg, #F5F7FA 0%, #E8ECF1 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
+        padding: "20px",
       }}
     >
       <div
         style={{
-          background: "#0F172A",
-          padding: "24px",
-          borderRadius: "12px",
-          width: "340px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-          border: "1px solid #1f2937",
+          background: "#FFFFFF",
+          padding: "40px",
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "400px",
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          border: "1px solid #E2E8F0",
         }}
       >
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: "16px",
+            background: "linear-gradient(135deg, #0052A3 0%, #0066CC 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            color: "white",
+            margin: "0 auto 24px",
+            boxShadow: "0 4px 6px -1px rgba(0, 82, 163, 0.3)",
+          }}
+        >
+          ZJ
+        </div>
         <h2
           style={{
             textAlign: "center",
-            marginBottom: "16px",
-            fontSize: "1.4rem",
+            marginBottom: "8px",
+            fontSize: "1.75rem",
+            color: "#1A1F36",
+            fontWeight: 600,
           }}
         >
           Technician Login
         </h2>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "0.9rem",
+            color: "#718096",
+            marginBottom: "32px",
+          }}
+        >
+          Access the service team dashboard
+        </p>
 
         <input
           value={techName}
@@ -48,26 +79,54 @@ export default function TechnicianLoginPage() {
           placeholder="Enter your name"
           style={{
             width: "100%",
-            padding: "8px 10px",
+            padding: "12px 16px",
             borderRadius: "8px",
-            border: "1px solid #374151",
-            background: "#020617",
-            color: "white",
+            border: "1px solid #E2E8F0",
+            background: "#FFFFFF",
+            color: "#1A1F36",
             marginBottom: "16px",
+            fontSize: "0.9rem",
+            transition: "all 0.2s ease",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "#0066CC";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 102, 204, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "#E2E8F0";
+            e.currentTarget.style.boxShadow = "none";
           }}
         />
 
         <button
           onClick={handleLogin}
+          disabled={!techName.trim()}
           style={{
             width: "100%",
-            padding: "8px 12px",
-            borderRadius: "999px",
+            padding: "12px 24px",
+            borderRadius: "8px",
             border: "none",
-            background: "#22c55e",
-            color: "black",
+            background: !techName.trim() ? "#CBD5E0" : "#0052A3",
+            color: "white",
             fontWeight: 600,
-            cursor: "pointer",
+            fontSize: "0.9rem",
+            cursor: !techName.trim() ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
+            boxShadow: !techName.trim() ? "none" : "0 2px 4px rgba(0, 82, 163, 0.2)",
+          }}
+          onMouseEnter={(e) => {
+            if (techName.trim()) {
+              e.currentTarget.style.background = "#0066CC";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 102, 204, 0.3)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (techName.trim()) {
+              e.currentTarget.style.background = "#0052A3";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 82, 163, 0.2)";
+            }
           }}
         >
           Go to Dashboard

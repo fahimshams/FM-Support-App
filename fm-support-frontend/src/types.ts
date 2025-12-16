@@ -20,6 +20,9 @@ export interface Ticket {
   description: string;
   createdAt: string;
   aiSuggestion?: AiSuggestion;
+  status: "OPEN" | "IN_PROGRESS" | "COMPLETED";
+  technicianId?: string;
+  technicianNotes?: string[];
 }
 
 export interface CreateTicketPayload {

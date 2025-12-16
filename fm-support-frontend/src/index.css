@@ -5,13 +5,50 @@ html, body, #root {
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Zoje Brand Colors - Clean Professional Palette */
+  --zoje-primary: #0066CC;        /* Professional Blue */
+  --zoje-primary-dark: #0052A3;   /* Darker Blue */
+  --zoje-primary-light: #3385D6;  /* Lighter Blue */
+  --zoje-blue: #0066CC;           /* Blue alias */
+  --zoje-dark-blue: #0052A3;      /* Dark Blue alias */
+  --zoje-light-blue: #E6F2FF;    /* Light Blue background */
+  --zoje-accent: #00A651;         /* Professional Green */
+  --zoje-accent-light: #33B870;  /* Light Green */
+  --zoje-success: #00A651;        /* Success Green */
+  --zoje-green: #00A651;          /* Green alias */
+  --zoje-green-light: #D1FAE5;    /* Light Green background */
+  --zoje-green-dark: #059669;     /* Dark Green */
+  --zoje-warning: #FF9800;        /* Warning Orange */
+  --zoje-yellow: #FFC107;         /* Yellow */
+  --zoje-yellow-light: #FEF3C7;   /* Light Yellow background */
+  --zoje-yellow-dark: #D97706;   /* Dark Yellow */
+  --zoje-error: #E53935;          /* Error Red */
+  --zoje-red: #E53935;             /* Red alias */
+  --zoje-red-light: #FEE2E2;      /* Light Red background */
+  --zoje-red-dark: #DC2626;       /* Dark Red */
+  
+  /* Neutral Colors - Clean & Modern */
+  --zoje-bg-primary: #FFFFFF;      /* Pure White */
+  --zoje-bg-secondary: #F5F7FA;     /* Light Gray */
+  --zoje-bg-tertiary: #E8ECF1;     /* Medium Gray */
+  --zoje-text-primary: #1A1F36;    /* Dark Text */
+  --zoje-text-secondary: #4A5568; /* Medium Text */
+  --zoje-text-tertiary: #718096;   /* Light Text */
+  --zoje-border: #E2E8F0;          /* Border Color */
+  --zoje-border-dark: #CBD5E0;     /* Darker Border */
+  
+  /* Shadows */
+  --zoje-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --zoje-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --zoje-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --zoje-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --zoje-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,13 +56,8 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -33,45 +65,124 @@ body {
   padding: 0;
   min-height: 100vh;
   width: 100%;
-  background-color: #020617; /* your dark theme */
-  display: block;            /* important: removes centering */
+  background-color: var(--zoje-bg-secondary);
+  color: var(--zoje-text-primary);
+  display: block;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h1, h2, h3, h4, h5, h6 {
+  color: var(--zoje-text-primary);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+p {
+  color: var(--zoje-text-secondary);
+  margin: 0;
+}
+
+a {
+  color: var(--zoje-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--zoje-primary-dark);
 }
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.9rem;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-button:hover {
-  border-color: #646cff;
-}
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--zoje-primary);
+  outline-offset: 2px;
 }
 
+input, textarea, select {
+  font-family: inherit;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--zoje-border);
+  padding: 10px 14px;
+  background: var(--zoje-bg-primary);
+  color: var(--zoje-text-primary);
+  transition: all 0.2s ease;
+}
 
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--zoje-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+input::placeholder, textarea::placeholder {
+  color: var(--zoje-text-tertiary);
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: var(--zoje-bg-primary);
+  border-radius: 12px;
+  border: 1px solid var(--zoje-border);
+  box-shadow: var(--zoje-shadow);
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--zoje-shadow-md);
+}
+
+.btn-primary {
+  background: var(--zoje-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--zoje-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--zoje-shadow-md);
+}
+
+.btn-secondary {
+  background: var(--zoje-bg-secondary);
+  color: var(--zoje-text-primary);
+  border: 1px solid var(--zoje-border);
+}
+
+.btn-secondary:hover {
+  background: var(--zoje-bg-tertiary);
+  border-color: var(--zoje-border-dark);
+}
+
+.btn-success {
+  background: var(--zoje-success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: var(--zoje-accent-light);
+  transform: translateY(-1px);
+  box-shadow: var(--zoje-shadow-md);
 }

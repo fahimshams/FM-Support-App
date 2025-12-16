@@ -35,54 +35,55 @@ export default function TechnicianDashboardPage() {
   const completedTickets = tickets.filter((t) => t.status === "COMPLETED");
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        color: "white",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      {/* Header row */}
+    <div>
+      {/* Header */}
       <div
         style={{
-          marginBottom: isMobile ? "14px" : "18px",
+          marginBottom: isMobile ? "20px" : "24px",
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
-          gap: "10px",
+          gap: "16px",
         }}
       >
         <div>
           <h1
             style={{
-              fontSize: isMobile ? "1.3rem" : "1.5rem",
-              marginBottom: 4,
+              fontSize: isMobile ? "1.5rem" : "1.75rem",
+              marginBottom: "8px",
+              color: "#1A1F36",
+              fontWeight: 600,
             }}
           >
-            Technician Dashboard
+            Zoje Technician Dashboard
           </h1>
-          <p
-            style={{
-              fontSize: "0.85rem",
-              opacity: 0.75,
-            }}
-          >
-            See all factory issues assigned to the service team.
+          <p style={{ fontSize: "0.95rem", color: "#718096" }}>
+            Manage all service tickets and machine issues in Bangladesh.
           </p>
         </div>
 
         <button
           onClick={() => navigate("/dashboard")}
           style={{
-            padding: "8px 14px",
-            borderRadius: "999px",
-            border: "none",
-            background: "#111827",
-            color: "white",
-            fontSize: "0.8rem",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            border: "1px solid #E2E8F0",
+            background: "#FFFFFF",
+            color: "#4A5568",
+            fontSize: "0.875rem",
+            fontWeight: 500,
             cursor: "pointer",
             width: isMobile ? "100%" : "auto",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#F5F7FA";
+            e.currentTarget.style.borderColor = "#CBD5E0";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#FFFFFF";
+            e.currentTarget.style.borderColor = "#E2E8F0";
           }}
         >
           ← Back to Customer View
@@ -93,77 +94,76 @@ export default function TechnicianDashboardPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-          gap: "10px",
-          marginBottom: isMobile ? "16px" : "20px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          gap: "16px",
+          marginBottom: "24px",
         }}
       >
-        <Card>
+        <Card style={{ padding: "20px" }}>
           <div
             style={{
-              fontSize: "0.8rem",
-              opacity: 0.75,
-              marginBottom: "4px",
+              fontSize: "0.875rem",
+              color: "#718096",
+              marginBottom: "8px",
+              fontWeight: 500,
             }}
           >
             Open Tickets
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 600 }}>
+          <div style={{ fontSize: "2rem", fontWeight: 700, color: "#DC2626" }}>
             {openTickets.length}
           </div>
         </Card>
 
-        <Card>
+        <Card style={{ padding: "20px" }}>
           <div
             style={{
-              fontSize: "0.8rem",
-              opacity: 0.75,
-              marginBottom: "4px",
+              fontSize: "0.875rem",
+              color: "#718096",
+              marginBottom: "8px",
+              fontWeight: 500,
             }}
           >
             In Progress
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 600 }}>
+          <div style={{ fontSize: "2rem", fontWeight: 700, color: "#D97706" }}>
             {inProgressTickets.length}
           </div>
         </Card>
 
-        <Card>
+        <Card style={{ padding: "20px" }}>
           <div
             style={{
-              fontSize: "0.8rem",
-              opacity: 0.75,
-              marginBottom: "4px",
+              fontSize: "0.875rem",
+              color: "#718096",
+              marginBottom: "8px",
+              fontWeight: 500,
             }}
           >
-            Completed Today (Demo)
+            Completed
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 600 }}>
+          <div style={{ fontSize: "2rem", fontWeight: 700, color: "#059669" }}>
             {completedTickets.length}
           </div>
         </Card>
       </div>
 
       {loading && (
-        <p
-          style={{
-            fontSize: "0.85rem",
-            opacity: 0.75,
-          }}
-        >
-          Loading tickets…
-        </p>
+        <Card style={{ padding: "40px", textAlign: "center" }}>
+          <p style={{ fontSize: "0.95rem", color: "#718096" }}>Loading tickets…</p>
+        </Card>
       )}
       {error && (
-        <p
+        <Card
           style={{
-            color: "#f97373",
-            fontSize: "0.85rem",
-            marginTop: "4px",
+            padding: "20px",
+            background: "#FEE2E2",
+            border: "1px solid #FCA5A5",
+            color: "#DC2626",
           }}
         >
           {error}
-        </p>
+        </Card>
       )}
 
       {/* Ticket columns */}
@@ -173,26 +173,26 @@ export default function TechnicianDashboardPage() {
             display: "grid",
             gridTemplateColumns: isMobile
               ? "minmax(0, 1fr)"
-              : "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "16px",
-            marginTop: isMobile ? "10px" : "16px",
+              : "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "20px",
           }}
         >
           {/* Open tickets column */}
           <div>
             <h2
               style={{
-                fontSize: "1rem",
-                opacity: 0.9,
-                marginBottom: "8px",
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                color: "#1A1F36",
+                marginBottom: "12px",
               }}
             >
               Open
             </h2>
             {openTickets.length === 0 && (
-              <p style={{ fontSize: "0.85rem", opacity: 0.7 }}>
-                No open tickets.
-              </p>
+              <Card style={{ padding: "20px", textAlign: "center" }}>
+                <p style={{ fontSize: "0.875rem", color: "#718096" }}>No open tickets.</p>
+              </Card>
             )}
             {openTickets.map((t) => (
               <TicketCard
@@ -207,17 +207,18 @@ export default function TechnicianDashboardPage() {
           <div>
             <h2
               style={{
-                fontSize: "1rem",
-                opacity: 0.9,
-                marginBottom: "8px",
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                color: "#1A1F36",
+                marginBottom: "12px",
               }}
             >
               In Progress
             </h2>
             {inProgressTickets.length === 0 && (
-              <p style={{ fontSize: "0.85rem", opacity: 0.7 }}>
-                No tickets in progress.
-              </p>
+              <Card style={{ padding: "20px", textAlign: "center" }}>
+                <p style={{ fontSize: "0.875rem", color: "#718096" }}>No tickets in progress.</p>
+              </Card>
             )}
             {inProgressTickets.map((t) => (
               <TicketCard
@@ -232,17 +233,20 @@ export default function TechnicianDashboardPage() {
           <div>
             <h2
               style={{
-                fontSize: "1rem",
-                opacity: 0.9,
-                marginBottom: "8px",
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                color: "#1A1F36",
+                marginBottom: "12px",
               }}
             >
               Completed
             </h2>
             {completedTickets.length === 0 && (
-              <p style={{ fontSize: "0.85rem", opacity: 0.7 }}>
-                No completed tickets yet.
-              </p>
+              <Card style={{ padding: "20px", textAlign: "center" }}>
+                <p style={{ fontSize: "0.875rem", color: "#718096" }}>
+                  No completed tickets yet.
+                </p>
+              </Card>
             )}
             {completedTickets.map((t) => (
               <TicketCard
@@ -269,80 +273,110 @@ function TicketCard({
     <Card
       onClick={onClick}
       style={{
-        marginBottom: "10px",
-        borderRadius: "16px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "6px",
+        marginBottom: "12px",
+        padding: "20px",
       }}
     >
       <div
         style={{
-          fontSize: "0.8rem",
-          opacity: 0.7,
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          gap: "8px",
+          alignItems: "flex-start",
+          gap: "12px",
+          marginBottom: "12px",
         }}
       >
-        <span>Ticket: {ticket.id}</span>
+        <span
+          style={{
+            fontSize: "0.75rem",
+            color: "#718096",
+            fontWeight: 500,
+          }}
+        >
+          #{ticket.id}
+        </span>
         <StatusPill status={ticket.status} />
       </div>
 
-      <div style={{ fontSize: "0.95rem", fontWeight: 500 }}>
+      <div
+        style={{
+          fontSize: "0.95rem",
+          fontWeight: 500,
+          color: "#1A1F36",
+          marginBottom: "8px",
+          lineHeight: 1.5,
+        }}
+      >
         {ticket.description}
       </div>
 
       <div
         style={{
-          fontSize: "0.8rem",
-          opacity: 0.7,
+          fontSize: "0.875rem",
+          color: "#718096",
+          marginBottom: "8px",
         }}
       >
-        Machine: {ticket.machineId} · Issue: {ticket.issueType}
+        Machine: {ticket.machineId} · {ticket.issueType.replace(/_/g, " ")}
       </div>
 
       <div
         style={{
           fontSize: "0.75rem",
-          opacity: 0.6,
+          color: "#CBD5E0",
         }}
       >
-        Created: {new Date(ticket.createdAt).toLocaleString()}
+        {new Date(ticket.createdAt).toLocaleString()}
       </div>
 
       {ticket.aiSuggestion && (
-        <div
+        <Card
           style={{
-            marginTop: "4px",
-            padding: "6px 8px",
-            borderRadius: "10px",
-            background: "rgba(15,23,42,0.9)",
-            border: "1px dashed rgba(148,163,184,0.5)",
-            fontSize: "0.8rem",
-            whiteSpace: "pre-wrap",
+            marginTop: "12px",
+            padding: "12px",
+            background: "#E6F2FF",
+            border: "1px solid #B3D9FF",
           }}
         >
-          <span
+          <div
             style={{
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              width: 18,
-              height: 18,
-              borderRadius: "999px",
-              background: "#22c55e",
-              color: "black",
-              fontSize: "0.7rem",
-              fontWeight: 700,
-              marginRight: "6px",
+              gap: "6px",
+              marginBottom: "6px",
             }}
           >
-            AI
-          </span>
-          {ticket.aiSuggestion.text}
-        </div>
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "4px",
+                background: "#0066CC",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.7rem",
+                fontWeight: 700,
+              }}
+            >
+              AI
+            </div>
+            <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#1A1F36" }}>
+              Suggestion
+            </span>
+          </div>
+          <div
+            style={{
+              fontSize: "0.8rem",
+              color: "#1A1F36",
+              lineHeight: 1.5,
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            {ticket.aiSuggestion.text}
+          </div>
+        </Card>
       )}
     </Card>
   );
@@ -350,32 +384,37 @@ function TicketCard({
 
 function StatusPill({ status }: { status: Ticket["status"] }) {
   let label = status;
-  let bg = "#1f2937";
-  let border = "rgba(148,163,184,0.4)";
+  let bg = "#F5F7FA";
+  let textColor = "#4A5568";
+  let border = "#E2E8F0";
 
   if (status === "OPEN") {
     label = "Open";
-    bg = "rgba(248,113,113,0.12)";
-    border = "rgba(248,113,113,0.8)";
+    bg = "#FEE2E2";
+    textColor = "#DC2626";
+    border = "#FCA5A5";
   } else if (status === "IN_PROGRESS") {
     label = "In Progress";
-    bg = "rgba(251,191,36,0.12)";
-    border = "rgba(251,191,36,0.9)";
+    bg = "#FEF3C7";
+    textColor = "#D97706";
+    border = "#FCD34D";
   } else if (status === "COMPLETED") {
     label = "Completed";
-    bg = "rgba(34,197,94,0.12)";
-    border = "rgba(34,197,94,0.9)";
+    bg = "#D1FAE5";
+    textColor = "#059669";
+    border = "#6EE7B7";
   }
 
   return (
     <div
       style={{
-        padding: "3px 8px",
-        borderRadius: "999px",
+        padding: "4px 10px",
+        borderRadius: "6px",
         border: `1px solid ${border}`,
         background: bg,
         fontSize: "0.75rem",
         fontWeight: 600,
+        color: textColor,
       }}
     >
       {label}

@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useIsMobile } from "../hooks/useIsMobile";
+import zojeLogo from "../assets/zoje_logo.png";
 
 export default function CustomerLayout() {
   const navigate = useNavigate();
@@ -8,123 +9,113 @@ export default function CustomerLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#020617",
-        color: "white",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
+    <div className="customer-layout">
       {/* HEADER */}
-      <header
-        style={{
-          borderBottom: "1px solid #1f2937",
-          padding: "10px 16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "#020617",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-        }}
-      >
+      <header className="support-header">
         {/* LEFT — LOGO */}
-        <div
-          style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}
-          onClick={() => navigate("/dashboard")}
-        >
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "999px",
-              background: "radial-gradient(circle at 30% 30%, #22c55e, #0f172a 70%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.8rem",
-              fontWeight: 700,
-            }}
-          >
-            FM
-          </div>
+        <div className="header-logo" onClick={() => navigate("/dashboard")}>
+          <img src={zojeLogo} alt="Zoje Machineries" className="logo-image" />
           {!isMobile && (
-            <div>
-              <div style={{ fontSize: "1rem", fontWeight: 600 }}>FM Factory Support</div>
-              <div style={{ fontSize: "0.75rem", opacity: 0.6 }}>Jack — After Sales</div>
+            <div className="logo-text">
+              <div className="logo-title">Zoje Machineries Support</div>
+              <div className="logo-subtitle">After-Sales Service Portal — Bangladesh</div>
             </div>
           )}
         </div>
 
-        {/* RIGHT — MOBILE HAMBURGER */}
+        {/* RIGHT — NAVIGATION */}
         {isMobile ? (
-          <div
+          <button
             onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              fontSize: "1.4rem",
-              cursor: "pointer",
-              padding: "6px 8px",
-              borderRadius: "8px",
-              background: menuOpen ? "#1f2937" : "transparent",
-            }}
+            className={`mobile-menu-button ${menuOpen ? "active" : ""}`}
           >
             ☰
-          </div>
-        ) : (
-          // Desktop tech mode
-          <button
-            onClick={() => navigate("/tech/dashboard")}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "999px",
-              border: "1px solid #374151",
-              background: "#020617",
-              color: "white",
-              fontSize: "0.8rem",
-              cursor: "pointer",
-            }}
-          >
-            Technician Mode
           </button>
+        ) : (
+          <div className="header-nav-wrapper">
+            <nav className="desktop-nav">
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">📊</span>
+                Dashboard
+              </NavLink>
+              <NavLink
+                to="/machines/registered"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">🏭</span>
+                My Machines
+              </NavLink>
+              <NavLink
+                to="/tickets/history"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">🎫</span>
+                Tickets
+              </NavLink>
+              <NavLink
+                to="/contact"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">📞</span>
+                Contact
+              </NavLink>
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">👤</span>
+                Profile
+              </NavLink>
+              <NavLink
+                to="/ai/assistant"
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">🤖</span>
+                Quick Help
+              </NavLink>
+            </nav>
+            <button
+              onClick={() => navigate("/tech/dashboard")}
+              className="secondary-button"
+            >
+              Technician Mode
+            </button>
+          </div>
         )}
       </header>
 
       {/* MOBILE MENU DRAWER */}
       {isMobile && (
-        <div
-          style={{
-            background: "#0f172a",
-            borderBottom: "1px solid #1f2937",
-            padding: "14px",
-            display: menuOpen ? "block" : "none",
-            animation: "fadeIn 0.2s ease-out",
-          }}
-        >
+        <div className={`mobile-menu-drawer ${menuOpen ? "open" : ""}`}>
           <MobileNavItem to="/dashboard" label="Dashboard" onClick={() => setMenuOpen(false)} />
-          <MobileNavItem to="/categories" label="Report Machine Issue" onClick={() => setMenuOpen(false)} />
-          <MobileNavItem to="/tickets/history" label="Ticket History" onClick={() => setMenuOpen(false)} />
-          <MobileNavItem to="/ticket" label="Ask AI Assistant" onClick={() => setMenuOpen(false)} />
-          <MobileNavItem to="/ai/image-demo" label="AI Image Diagnosis" onClick={() => setMenuOpen(false)} />
+          <MobileNavItem to="/machines/registered" label="View My Machines" onClick={() => setMenuOpen(false)} />
+          <MobileNavItem to="/tickets/history" label="My Support Tickets" onClick={() => setMenuOpen(false)} />
+          <MobileNavItem to="/contact" label="Contact Support" onClick={() => setMenuOpen(false)} />
+          <MobileNavItem to="/profile" label="Profile & Company Info" onClick={() => setMenuOpen(false)} />
 
-          <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #1f2937" }}>
+          <div className="mobile-menu-footer">
             <button
               onClick={() => {
                 setMenuOpen(false);
                 navigate("/tech/dashboard");
               }}
-              style={{
-                width: "100%",
-                padding: "10px 0",
-                borderRadius: "8px",
-                background: "#22c55e",
-                border: "none",
-                color: "black",
-                fontWeight: 600,
-                marginTop: "6px",
-                fontSize: "0.85rem",
-              }}
+              className="primary-button"
+              style={{ width: "100%" }}
             >
               Technician Mode
             </button>
@@ -133,25 +124,19 @@ export default function CustomerLayout() {
       )}
 
       {/* MAIN CONTENT */}
-      <main style={{ padding: isMobile ? "14px" : "24px" }}>
+      <main className="main-content">
         <Outlet />
       </main>
     </div>
   );
 }
 
-function MobileNavItem({ to, label, onClick }) {
+function MobileNavItem({ to, label, onClick }: { to: string; label: string; onClick: () => void }) {
   return (
     <NavLink
       to={to}
       onClick={onClick}
-      style={({ isActive }) => ({
-        display: "block",
-        padding: "10px 0",
-        color: isActive ? "#22c55e" : "white",
-        fontSize: "0.9rem",
-        textDecoration: "none",
-      })}
+      className={({ isActive }) => `mobile-nav-item ${isActive ? "active" : ""}`}
     >
       {label}
     </NavLink>

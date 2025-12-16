@@ -16,7 +16,7 @@ app.use(express.json());
 
 // basic health check
 app.get("/", (req, res) => {
-  res.send("FM Support Backend Prototype is running.");
+  res.send("Zoje Machineries Support Backend is running.");
 });
 
 app.use("/public", express.static("public")); 
