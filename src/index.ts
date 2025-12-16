@@ -18,6 +18,28 @@ const allowedOrigins = [
   process.env.FRONTEND_URL, // Additional frontend URL from environment
 ].filter(Boolean); // Remove undefined values
 
+// Custom CORS middleware that ALWAYS sets headers (even on errors)
+// This must be before any other middleware
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Always set CORS headers if origin is in allowed list
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+// Also use cors middleware as backup
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
@@ -39,18 +61,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Handle preflight requests explicitly
-app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  }
-  res.sendStatus(200);
-});
 
 app.use(express.json());
 
@@ -97,7 +107,14 @@ app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server listening on http://0.0.0.0:${PORT}`);
-  console.log(`CORS enabled for origins: ${allowedOrigins.join(', ')}`);
-});
+// Start server with error handling
+try {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`✅ Server listening on http://0.0.0.0:${PORT}`);
+    console.log(`✅ CORS enabled for origins: ${allowedOrigins.join(', ')}`);
+    console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+} catch (error) {
+  console.error('❌ Failed to start server:', error);
+  process.exit(1);
+}

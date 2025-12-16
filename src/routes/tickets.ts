@@ -15,7 +15,12 @@ const router = Router();
 
 // list all tickets (for demo)
 router.get("/", (req, res) => {
-  res.json(tickets);
+  try {
+    res.json(tickets);
+  } catch (error) {
+    console.error('Error in GET /tickets:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // create a ticket with AI suggestion + caching + credit usage
