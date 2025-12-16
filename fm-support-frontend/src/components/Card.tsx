@@ -7,13 +7,13 @@ export default function Card({
   className = "",
 }: {
   children: React.ReactNode;
-  onClick?: (e?: React.MouseEvent) => void;
+  onClick?: (e: React.MouseEvent) => void;
   style?: React.CSSProperties;
   className?: string;
 }) {
   return (
     <div
-      onClick={onClick}
+      onClick={onClick ? (e) => onClick(e) : undefined}
       className={`card-base ${className}`}
       style={{
         cursor: onClick ? "pointer" : "default",
