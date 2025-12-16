@@ -90,30 +90,48 @@ export class GeminiLiveClient {
       console.log('Attempting to connect to Gemini Live API...');
       console.log('API Key present:', !!this.ai);
       
-      // Try different model names - Live API might use different naming
-      // Note: Live API models might be different from regular API models
-      const modelToUse = 'gemini-2.5-flash-native-audio-preview-09-2025';
+      // Try different model names - Live API model names may vary
+      // Common model names: 
+      // - gemini-2.0-flash-exp (experimental)
+      // - gemini-1.5-flash-latest
+      // - gemini-2.0-flash-thinking-exp-001
+      // - For native audio: gemini-2.0-flash-exp (may support audio natively)
+      // If you get invalid_argument errors, try a different model name
+      const modelToUse = 'gemini-2.0-flash-exp'; // Try a more standard model name first
       console.log('Using model:', modelToUse);
       console.log('API Key length:', this.ai ? 'present' : 'missing');
       
+      // Build config object - start with minimal config to avoid invalid_argument errors
+      const config: any = {
+        responseModalities: [Modality.AUDIO],
+        systemInstruction: SYSTEM_INSTRUCTION,
+      };
+      
+      // Add speech config - common voice names: Aoede, Charon, Fenrir, Kore, Puck
+      // If you get invalid_argument, try removing this or using a different voice name
+      config.speechConfig = {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } }
+      };
+      
+      // Add transcription configs
+      config.inputAudioTranscription = {};
+      config.outputAudioTranscription = {};
+      
+      console.log('Connection config:', JSON.stringify(config, null, 2));
+      
+      // The connect() method returns a promise that resolves to the session
+      // We need to handle both the promise and the callbacks
       const sessionPromise = this.ai.live.connect({
         model: modelToUse,
-        config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } }
-          },
-          systemInstruction: SYSTEM_INSTRUCTION,
-          inputAudioTranscription: {},
-          outputAudioTranscription: {},
-        },
+        config,
         callbacks: {
           onopen: async () => {
             console.log('onopen callback fired');
             this.isConnected = true;
             
-            // Wait for session to be ready - this is critical
+            // The session should be available from the promise
             try {
+              // Wait for the session promise to resolve
               this.session = await sessionPromise;
               console.log('Session obtained in onopen:', this.session ? 'yes' : 'no');
               
@@ -147,36 +165,9 @@ export class GeminiLiveClient {
             // Start in listening mode - AI should introduce itself from system instruction
             this.onStatusChange('listening');
             
-            // Send a minimal text input to trigger the AI to start
-            // The system instruction tells it to introduce itself
-            // We'll do this after a very short delay to ensure everything is ready
-            setTimeout(async () => {
-              if (!this.isConnected) {
-                console.log('Connection already closed, skipping trigger');
-                return;
-              }
-              
-              try {
-                if (this.session && typeof this.session.sendRealtimeInput === 'function') {
-                  console.log('Sending initial trigger to start conversation...');
-                  // Send minimal text to trigger AI response
-                  // The system instruction will make it introduce itself
-                  await this.session.sendRealtimeInput({ text: '' }); // Empty text just to trigger
-                  console.log('Initial trigger sent');
-                  this.onStatusChange('speaking'); // AI should respond now
-                } else {
-                  console.warn('Session not ready for trigger');
-                }
-              } catch (error: any) {
-                console.error('Error sending initial trigger:', error);
-                console.error('Error details:', {
-                  message: error?.message,
-                  code: error?.code,
-                  name: error?.name
-                });
-                // Don't change status on error - let user try speaking
-              }
-            }, 500); // Very short delay - just to ensure session is fully ready
+            // Don't send any initial text - let the AI respond naturally to audio input
+            // The system instruction should make it introduce itself when it receives audio
+            // Sending text immediately might cause invalid_argument errors if the session isn't fully ready
           },
 
           onmessage: async (msg: LiveServerMessage) => {
@@ -215,6 +206,22 @@ export class GeminiLiveClient {
             console.error('Error name:', err?.name);
             console.error('Error stack:', err?.stack);
             console.error('Full error object:', err);
+            
+            // Handle structured error objects from Gemini API
+            if (err?.error) {
+              console.error('Error.error:', err.error);
+              console.error('Error.details:', err.details);
+            }
+            
+            // Check for specific error types
+            if (err?.message?.includes('invalid_argument') || err?.code === 'invalid_argument' || err?.error === 'ERROR_BAD_REQUEST') {
+              console.error('Invalid argument error detected - this may be due to:');
+              console.error('1. Invalid API key');
+              console.error('2. Invalid model name');
+              console.error('3. Invalid configuration parameters');
+              console.error('4. Empty or malformed input');
+            }
+            
             console.error('Error JSON:', JSON.stringify(err, null, 2));
             console.error('========================');
             this.onStatusChange('error');
@@ -223,10 +230,42 @@ export class GeminiLiveClient {
           }
         }
       });
+      
+      // Also catch any immediate promise rejections from connect()
+      // This handles cases where the connection fails synchronously
+      sessionPromise.catch((error: any) => {
+        console.error('Session promise rejected immediately:', error);
+        console.error('This usually means the connection failed before callbacks were set up');
+        console.error('Error details:', {
+          message: error?.message,
+          code: error?.code,
+          error: error?.error,
+          details: error?.details
+        });
+        this.onStatusChange('error');
+      });
+      
     } catch (error: any) {
       console.error('Connection failed:', error);
       console.error('Error message:', error?.message);
+      console.error('Error code:', error?.code);
+      console.error('Error name:', error?.name);
       console.error('Error stack:', error?.stack);
+      
+      // Handle structured error objects from Gemini API
+      if (error?.error) {
+        console.error('Error.error:', error.error);
+        console.error('Error.details:', error.details);
+        
+        // Provide user-friendly error messages
+        if (error.error === 'ERROR_BAD_REQUEST') {
+          console.error('Bad Request Error - Possible causes:');
+          console.error('1. Invalid API key - check VITE_GEMINI_API_KEY');
+          console.error('2. Invalid model name - model may not be available');
+          console.error('3. Invalid configuration - check API permissions');
+        }
+      }
+      
       console.error('Full error:', JSON.stringify(error, null, 2));
       this.onStatusChange('error');
     }

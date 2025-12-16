@@ -14,20 +14,27 @@ const PORT = Number(process.env.PORT) || 4000;
 // CORS configuration - allow frontend URL from environment or default to allow all in development
 const allowedOrigins = [
   'http://localhost:5173', // Local development
-  process.env.FRONTEND_URL, // Production frontend URL
+  'https://fm-support-app.vercel.app', // Production Vercel frontend
+  process.env.FRONTEND_URL, // Additional frontend URL from environment
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
-  origin: allowedOrigins.length > 0 
-    ? (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      }
-    : true, // Allow all origins if no FRONTEND_URL is set (development)
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // Log the blocked origin for debugging
+      console.warn(`CORS blocked origin: ${origin}`);
+      console.warn(`Allowed origins: ${allowedOrigins.join(', ')}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
