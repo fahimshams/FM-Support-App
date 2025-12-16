@@ -7,9 +7,9 @@ services:
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: PORT
         value: 10000
+      # Note: NODE_ENV is automatically set to 'production' by Render at runtime
+      # Don't set it here as it would skip devDependencies during build
       # Add your GEMINI_API_KEY in Render dashboard under Environment Variables
 
