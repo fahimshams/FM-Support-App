@@ -18,13 +18,31 @@ const allowedOrigins = [
   process.env.FRONTEND_URL, // Additional frontend URL from environment
 ].filter(Boolean); // Remove undefined values
 
+// Function to check if origin is allowed (including Vercel preview URLs)
+function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return false;
+  
+  // Check exact matches
+  if (allowedOrigins.includes(origin)) return true;
+  
+  // Allow all Vercel preview URLs (they follow pattern: *.vercel.app)
+  // Examples: 
+  // - https://fm-support-app-git-main-fahimshams-projects.vercel.app
+  // - https://fm-support-app-*.vercel.app
+  if (origin.includes('.vercel.app')) {
+    return true;
+  }
+  
+  return false;
+}
+
 // Custom CORS middleware that ALWAYS sets headers (even on errors)
 // This must be before any other middleware
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
-  // Always set CORS headers if origin is in allowed list
-  if (origin && allowedOrigins.includes(origin)) {
+  // Always set CORS headers if origin is allowed (including Vercel preview URLs)
+  if (origin && isOriginAllowed(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
@@ -47,13 +65,13 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin is allowed (including Vercel preview URLs)
+    if (isOriginAllowed(origin)) {
       callback(null, true);
     } else {
       // Log the blocked origin for debugging
       console.warn(`CORS blocked origin: ${origin}`);
-      console.warn(`Allowed origins: ${allowedOrigins.join(', ')}`);
+      console.warn(`Allowed origins: ${allowedOrigins.join(', ')}, *.vercel.app`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -81,9 +99,9 @@ app.use("/ai", aiRouter);
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Global error handler:', err);
   
-  // Set CORS headers even on error
+  // Set CORS headers even on error (including Vercel preview URLs)
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && isOriginAllowed(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
@@ -97,9 +115,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {
-  // Set CORS headers for 404
+  // Set CORS headers for 404 (including Vercel preview URLs)
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && isOriginAllowed(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
