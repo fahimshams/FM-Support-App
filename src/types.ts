@@ -27,16 +27,6 @@ export interface User {
   aiCredits: number;
 }
 
-export interface Ticket {
-  id: string;
-  machineId: string;
-  createdByUserId: string;
-  issueType: IssueType;
-  description: string;
-  createdAt: Date;
-  aiSuggestion?: AiSuggestion;
-}
-
 export interface AiSuggestion {
   text: string;
   fromCache: boolean;
@@ -57,16 +47,10 @@ export interface Ticket {
   createdByUserId: string;
   issueType: IssueType;
   description: string;
-
-  aiSuggestion?: {
-    text: string;
-    fromCache: boolean;
-    creditsUsed: number;
-  };
-
+  createdAt: Date;
+  aiSuggestion?: AiSuggestion;
   status: "OPEN" | "IN_PROGRESS" | "COMPLETED";
   technicianId?: string;
   technicianNotes?: string[];
-  createdAt: string;
 }
 

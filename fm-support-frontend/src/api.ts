@@ -6,9 +6,9 @@ import type {
   MachineInstance,
 } from "./types";
 
-// ❗ Use the current host automatically (works on laptop + iPhone hotspot)
+// Use environment variable for API URL, fallback to localhost for development
 export const BASE_URL =
-  `${window.location.protocol}//${window.location.hostname}:4000`;
+  import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:4000`;
 
 export async function createTicket(
   payload: CreateTicketPayload

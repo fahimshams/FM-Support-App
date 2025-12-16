@@ -72,6 +72,7 @@ router.post("/", async (req, res) => {
       text: suggestionText,
       fromCache,
       creditsUsed,
+      cacheKey,
     };
 
     const newTicket: Ticket = {
@@ -82,9 +83,9 @@ router.post("/", async (req, res) => {
       description,
       aiSuggestion,
       status: "OPEN",
-      technicianId: null,
+      technicianId: undefined,
       technicianNotes: [],
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
 
 
@@ -112,6 +113,9 @@ router.patch("/:ticketId", (req, res) => {
   if (technicianId) ticket.technicianId = technicianId;
 
   if (note) {
+    if (!ticket.technicianNotes) {
+      ticket.technicianNotes = [];
+    }
     ticket.technicianNotes.push(note);
   }
 

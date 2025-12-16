@@ -9,9 +9,28 @@ import machinesRouter from "./routes/machines";
 import aiRouter from "./routes/ai";    
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = Number(process.env.PORT) || 4000;
 
-app.use(cors());            
+// CORS configuration - allow frontend URL from environment or default to allow all in development
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  process.env.FRONTEND_URL, // Production frontend URL
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: allowedOrigins.length > 0 
+    ? (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    : true, // Allow all origins if no FRONTEND_URL is set (development)
+  credentials: true
+}));
+
 app.use(express.json());
 
 // basic health check

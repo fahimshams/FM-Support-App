@@ -1,0 +1,35 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+// Simple icon component using Unicode/Emoji for now
+// Can be replaced with SVG icons later
+export const Icons = {
+    dashboard: "📊",
+    machine: "🏭",
+    ticket: "🎫",
+    contact: "📞",
+    profile: "👤",
+    search: "🔍",
+    settings: "⚙️",
+    support: "🛠️",
+    history: "📜",
+    add: "➕",
+    plus: "➕",
+    check: "✓",
+    warning: "⚠️",
+    error: "✗",
+    info: "ℹ️",
+    phone: "📞",
+    document: "📄",
+    download: "⬇️",
+    upload: "📤",
+    close: "✕",
+    sort: "⇅",
+    "sort-up": "↑",
+    "sort-down": "↓",
+    chat: "💬",
+    send: "➤",
+    user: "👤",
+};
+export default function Icon({ name }) {
+    return _jsx("span", { className: "icon", children: Icons[name] || "•" });
+}
+//# sourceMappingURL=Icon.js.map
